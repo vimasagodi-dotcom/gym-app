@@ -1,0 +1,48 @@
+{
+  "name": "IRON ATLAS — Treino de Ginásio & Hipertrofia",
+  "short_name": "IRON ATLAS",
+  "description": "App de treino e musculação de alto rendimento com anatomia muscular, sobrecarga progressiva e temporizador inteligente.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090d16",
+  "theme_color": "#090d16",
+  "lang": "pt",
+  "dir": "ltr",
+  "categories": ["fitness", "sports", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "/pwa-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pwa-icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Treino Rápido",
+      "short_name": "Treinar",
+      "description": "Iniciar sessão de treino livre imediatamente",
+      "url": "/?action=quick_workout",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    },
+    {
+      "name": "Meus Planos",
+      "short_name": "Planos",
+      "description": "Aceder às rotinas e divisões de treino",
+      "url": "/?tab=routines",
+      "icons": [{ "src": "/favicon.svg", "sizes": "96x96" }]
+    }
+  ]
+}
