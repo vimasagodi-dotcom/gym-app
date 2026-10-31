@@ -100,32 +100,32 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
   const exerciseMap = useMemo(() => new Map(exercises.map((e) => [e.id, e])), [exercises]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-6 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-3.5 sm:px-4 py-3 sm:py-4 pb-28 space-y-5 animate-fade-in">
       {/* 1. Header de Boas-Vindas Clean */}
-      <div className="flex items-center justify-between pt-1">
-        <div>
-          <span className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase">
+      <div className="flex items-center justify-between gap-2 pt-1">
+        <div className="min-w-0">
+          <span className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase truncate block">
             Visão Geral • {profile.name}
           </span>
-          <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight mt-0.5 truncate">
             Pronto para treinar?
           </h1>
         </div>
 
         {/* Streak Badge & Botão Inteligente */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
             onClick={() => setIsOnboardingOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-medium text-slate-200 transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-medium text-slate-200 transition-all active:scale-95"
             title="Gerar plano personalizado com base nas tuas métricas"
           >
-            <Sparkles size={14} className="text-amber-400" />
+            <Sparkles size={14} className="text-amber-400 shrink-0" />
             <span className="hidden sm:inline">Plano Auto</span>
           </button>
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl">
-            <Flame size={15} className="text-amber-400 fill-amber-400" />
+          <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl">
+            <Flame size={15} className="text-amber-400 fill-amber-400 shrink-0" />
             <span className="text-xs font-semibold text-slate-200 font-mono">
               {stats.streak}d
             </span>

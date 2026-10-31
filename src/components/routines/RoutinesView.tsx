@@ -44,11 +44,11 @@ export const RoutinesView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-5 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-3.5 sm:px-4 py-3 sm:py-4 pb-28 space-y-5 animate-fade-in">
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black text-slate-100 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-black text-slate-100 tracking-tight">
             Planos de Treino
           </h1>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -56,20 +56,20 @@ export const RoutinesView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center flex-wrap gap-2">
           <button
             type="button"
             onClick={() => startQuickWorkout('Treino Rápido')}
-            className="px-3.5 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all"
+            className="flex-1 sm:flex-none px-3 py-2 bg-[#121215] hover:bg-[#1a1a20] text-slate-200 border border-white/[0.08] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
           >
-            <Play size={14} className="text-amber-400 fill-amber-400" /> Treino Livre
+            <Play size={13} className="text-amber-400 fill-amber-400" /> Treino Livre
           </button>
           <button
             type="button"
             onClick={() => setIsSmartModalOpen(true)}
-            className="px-3.5 py-2.5 bg-gradient-to-r from-amber-500/20 to-sky-500/20 hover:from-amber-500/30 hover:to-sky-500/30 border border-amber-500/40 text-amber-400 rounded-2xl text-xs font-black flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+            className="flex-1 sm:flex-none px-3 py-2 bg-[#121215] hover:bg-[#1a1a20] border border-white/[0.08] text-slate-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
           >
-            <Sparkles size={15} /> Gerar Inteligente
+            <Sparkles size={14} className="text-amber-400" /> Gerar Auto
           </button>
           <button
             type="button"
@@ -77,9 +77,9 @@ export const RoutinesView: React.FC = () => {
               setEditingRoutine(null);
               setIsEditorOpen(true);
             }}
-            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-2xl text-xs font-bold flex items-center gap-1.5 shadow-md shadow-amber-500/20 active:scale-95 transition-all"
+            className="w-full sm:w-auto px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
           >
-            <Plus size={16} /> Novo Plano
+            <Plus size={15} /> Novo Plano
           </button>
         </div>
       </div>

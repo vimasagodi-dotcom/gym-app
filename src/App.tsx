@@ -26,7 +26,7 @@ const MainAppContent: React.FC = () => {
   }, [isActive]);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex flex-col font-sans">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex flex-col font-sans w-full max-w-full overflow-x-hidden">
       {/* Banner PWA de Instalação para Android & iOS */}
       <PwaInstallPrompt />
       {/* Visualização de Treino Ativo focado */}
@@ -34,7 +34,7 @@ const MainAppContent: React.FC = () => {
         <ActiveWorkoutView />
       ) : (
         /* Navegação normal entre as páginas principais */
-        <main className="flex-1">
+        <main className="flex-1 w-full max-w-full overflow-x-hidden">
           {currentTab === 'dashboard' && (
             <DashboardView onNavigateToTab={(tab) => setCurrentTab(tab)} />
           )}

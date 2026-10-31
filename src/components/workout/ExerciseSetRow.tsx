@@ -58,34 +58,34 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
 
   return (
     <div
-      className={`grid grid-cols-12 gap-2 items-center py-2 px-2.5 rounded-2xl transition-all ${
+      className={`grid grid-cols-12 gap-1.5 sm:gap-2 items-center py-2 px-1.5 sm:px-2.5 rounded-xl transition-all ${
         setLog.isCompleted
           ? 'bg-emerald-500/15 border border-emerald-500/30'
-          : 'bg-slate-900/80 border border-slate-800/90 hover:bg-slate-900'
+          : 'bg-[#121215] border border-white/[0.08] hover:bg-[#18181c]'
       }`}
     >
-      {/* 1. Indicador / Tipo de Série (Hitbox >= 44px) */}
-      <div className="col-span-2 flex items-center">
+      {/* 1. Indicador / Tipo de Série */}
+      <div className="col-span-2 flex items-center justify-center">
         <button
           type="button"
           onClick={cycleSetType}
           title={`Tipo: ${currentTypeInfo.label}. Clica para alternar.`}
-          className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-2xl flex items-center justify-center text-xs font-black transition-transform active:scale-90 ${currentTypeInfo.color}`}
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-transform active:scale-90 ${currentTypeInfo.color}`}
         >
           {currentTypeInfo.badge}
         </button>
       </div>
 
-      {/* 2. Histórico da Sessão Anterior (Linha de referência visual) */}
+      {/* 2. Histórico da Sessão Anterior */}
       <div className="col-span-2 text-center">
         {previousSet ? (
           <div className="flex flex-col items-center">
-            <span className="text-[9px] uppercase font-bold text-slate-500">Último</span>
-            <span className="text-xs font-mono font-bold text-slate-300">
+            <span className="text-[9px] uppercase font-semibold text-slate-500 leading-none">Último</span>
+            <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-300 mt-0.5">
               {formatWeight(previousSet.weightKg, unit)}
             </span>
-            <span className="text-[10px] font-mono text-slate-400">
-              × {previousSet.reps} reps
+            <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
+              × {previousSet.reps}
             </span>
           </div>
         ) : (
@@ -93,7 +93,7 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
         )}
       </div>
 
-      {/* 3. Input de Peso (com inputMode="decimal" para smartphone) */}
+      {/* 3. Input de Peso */}
       <div className="col-span-3">
         <div className="relative flex items-center">
           <input
@@ -104,15 +104,15 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
             value={displayWeight === 0 ? '' : displayWeight}
             placeholder="0"
             onChange={handleWeightChange}
-            className="w-full min-h-[44px] text-center bg-slate-950 border border-slate-700/80 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 rounded-xl py-2 px-1 text-base font-black text-slate-100 font-mono outline-none"
+            className="w-full min-h-[38px] sm:min-h-[44px] text-center bg-[#09090b] border border-white/[0.1] focus:border-amber-400 rounded-lg py-1.5 px-0.5 text-sm sm:text-base font-bold text-slate-100 font-mono outline-none"
           />
-          <span className="absolute right-2 text-[10px] font-black text-slate-500 pointer-events-none uppercase">
+          <span className="absolute right-1 sm:right-1.5 text-[9px] font-bold text-slate-500 pointer-events-none uppercase">
             {unit}
           </span>
         </div>
       </div>
 
-      {/* 4. Input de Repetições (com inputMode="numeric") */}
+      {/* 4. Input de Repetições */}
       <div className="col-span-2">
         <input
           type="number"
@@ -121,7 +121,7 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
           value={setLog.reps === 0 ? '' : setLog.reps}
           placeholder="0"
           onChange={handleRepsChange}
-          className="w-full min-h-[44px] text-center bg-slate-950 border border-slate-700/80 focus:border-amber-400 focus:ring-1 focus:ring-amber-400 rounded-xl py-2 px-1 text-base font-black text-slate-100 font-mono outline-none"
+          className="w-full min-h-[38px] sm:min-h-[44px] text-center bg-[#09090b] border border-white/[0.1] focus:border-amber-400 rounded-lg py-1.5 px-0.5 text-sm sm:text-base font-bold text-slate-100 font-mono outline-none"
         />
       </div>
 
@@ -136,33 +136,33 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
           value={setLog.rpe ?? ''}
           placeholder="RPE"
           onChange={handleRpeChange}
-          className="w-full min-h-[44px] text-center bg-slate-950/50 border border-slate-800 rounded-xl py-1 text-xs text-slate-300 font-mono outline-none focus:border-slate-600"
+          className="w-full min-h-[38px] sm:min-h-[44px] text-center bg-[#09090b]/60 border border-white/[0.08] rounded-lg py-1 text-[11px] text-slate-300 font-mono outline-none focus:border-white/20"
           title="RPE (Esforço Percebido de 1 a 10)"
         />
       </div>
 
-      {/* 6. Botão de Conclusão da Série (Grande, tátil >= 44px) */}
+      {/* 6. Botão de Conclusão da Série */}
       <div className="col-span-2 flex items-center justify-end gap-1">
         <button
           type="button"
           onClick={onToggleComplete}
-          className={`min-w-[44px] min-h-[44px] w-11 h-11 rounded-2xl flex items-center justify-center transition-all active:scale-90 shadow-md ${
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all active:scale-90 shadow-md ${
             setLog.isCompleted
-              ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black shadow-emerald-500/40 ring-2 ring-emerald-400/50'
-              : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border border-slate-700'
+              ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold'
+              : 'bg-slate-800 hover:bg-slate-700 text-slate-400 border border-white/[0.08]'
           }`}
           title={setLog.isCompleted ? 'Desmarcar série' : 'Concluir série e iniciar descanso'}
         >
-          <Check size={22} className={setLog.isCompleted ? 'stroke-[3.5]' : 'stroke-[2]'} />
+          <Check size={18} className={setLog.isCompleted ? 'stroke-[3]' : 'stroke-[2]'} />
         </button>
 
         <button
           type="button"
           onClick={onDelete}
-          className="p-1.5 text-slate-600 hover:text-rose-400 rounded-lg transition-colors"
+          className="p-1 text-slate-600 hover:text-rose-400 rounded-lg transition-colors"
           title="Eliminar série"
         >
-          <Trash2 size={15} />
+          <Trash2 size={14} />
         </button>
       </div>
     </div>

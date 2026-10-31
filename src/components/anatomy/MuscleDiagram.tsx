@@ -98,12 +98,12 @@ export const MuscleDiagram: React.FC<MuscleDiagramProps> = ({
   const waistOffset = silhouette === 'female' ? -2 : silhouette === 'male' ? -1 : 0;
 
   return (
-    <div className={`muscle-diagram-v-taper flex items-center justify-center gap-4 select-none ${className}`}>
+    <div className={`muscle-diagram-v-taper flex items-center justify-center gap-2 sm:gap-4 select-none max-w-full overflow-hidden ${className}`}>
       {/* ========================================================
           VISTA ANTERIOR (FRONTAL) — V-TAPER ATHLETIC SILHOUETTE
          ======================================================== */}
       {(view === 'anterior' || view === 'both') && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center shrink min-w-0">
           <span className="text-[10px] tracking-widest uppercase font-black text-slate-400 mb-1.5 font-mono">
             Frente
           </span>
@@ -111,7 +111,7 @@ export const MuscleDiagram: React.FC<MuscleDiagramProps> = ({
             viewBox="0 0 120 230"
             width={dimensions.width}
             height={dimensions.height}
-            className="filter drop-shadow-md transition-all duration-300"
+            className="filter drop-shadow-md transition-all duration-300 max-w-[120px] sm:max-w-none w-full h-auto"
           >
             {/* Cabeça e Pescoço Atlético */}
             <circle cx="60" cy="18" r="9" fill="#27272a" stroke="#3f3f46" strokeWidth="0.8" />
@@ -306,7 +306,7 @@ export const MuscleDiagram: React.FC<MuscleDiagramProps> = ({
           VISTA POSTERIOR (COSTAS) — V-TAPER DORSAL & DIAMOND CALVES
          ======================================================== */}
       {(view === 'posterior' || view === 'both') && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center shrink min-w-0">
           <span className="text-[10px] tracking-widest uppercase font-black text-slate-400 mb-1.5 font-mono">
             Costas
           </span>
@@ -314,7 +314,7 @@ export const MuscleDiagram: React.FC<MuscleDiagramProps> = ({
             viewBox="0 0 120 230"
             width={dimensions.width}
             height={dimensions.height}
-            className="filter drop-shadow-md transition-all duration-300"
+            className="filter drop-shadow-md transition-all duration-300 max-w-[120px] sm:max-w-none w-full h-auto"
           >
             {/* Cabeça e Pescoço */}
             <circle cx="60" cy="18" r="9" fill="#27272a" stroke="#3f3f46" strokeWidth="0.8" />
