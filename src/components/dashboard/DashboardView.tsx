@@ -100,14 +100,14 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
   const exerciseMap = useMemo(() => new Map(exercises.map((e) => [e.id, e])), [exercises]);
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-5 animate-fade-in">
-      {/* 1. Header de Boas-Vindas */}
-      <div className="flex items-center justify-between">
+    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-6 animate-fade-in">
+      {/* 1. Header de Boas-Vindas Clean */}
+      <div className="flex items-center justify-between pt-1">
         <div>
-          <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
-            Olá, {profile.name}
+          <span className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase">
+            Visão Geral • {profile.name}
           </span>
-          <h1 className="text-2xl font-black text-slate-100 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">
             Pronto para treinar?
           </h1>
         </div>
@@ -117,57 +117,52 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
           <button
             type="button"
             onClick={() => setIsOnboardingOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-amber-500/20 to-sky-500/20 hover:from-amber-500/30 hover:to-sky-500/30 border border-amber-500/40 rounded-2xl text-xs font-black text-amber-400 shadow-sm transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-medium text-slate-200 transition-all active:scale-95"
             title="Gerar plano personalizado com base nas tuas métricas"
           >
-            <Sparkles size={15} />
-            <span className="hidden sm:inline">Plano Inteligente</span>
+            <Sparkles size={14} className="text-amber-400" />
+            <span className="hidden sm:inline">Plano Auto</span>
           </button>
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/15 border border-amber-500/30 rounded-2xl">
-            <Flame size={18} className="text-amber-400 fill-amber-400 animate-pulse" />
-            <div className="text-left">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block leading-none">
-                Streak
-              </span>
-              <span className="text-xs font-black text-amber-400 font-mono">
-                {stats.streak} dias
-              </span>
-            </div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl">
+            <Flame size={15} className="text-amber-400 fill-amber-400" />
+            <span className="text-xs font-semibold text-slate-200 font-mono">
+              {stats.streak}d
+            </span>
           </div>
         </div>
       </div>
 
       {/* Banner de Boas-vindas para calibração inicial se ainda não completou */}
       {!profile.hasCompletedOnboarding && (
-        <div className="bg-gradient-to-r from-amber-500/20 via-slate-900 to-slate-900 border border-amber-500/40 rounded-3xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+        <div className="bg-[#121215] border border-white/[0.08] rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-black text-amber-400 uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400 uppercase tracking-wide">
               <Sparkles size={14} /> Calibração Inicial do Atleta
             </div>
-            <p className="text-xs text-slate-300 mt-1 max-w-md">
-              Insere a tua altura, peso corporal e objetivo para receberes um plano Full-Body, Upper/Lower ou PPL calibrado à tua medida!
+            <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
+              Define os teus objetivos e características para obteres um plano Full-Body, Upper/Lower ou PPL à medida.
             </p>
           </div>
           <button
             type="button"
             onClick={() => setIsOnboardingOpen(true)}
-            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all active:scale-95 shrink-0"
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all active:scale-95 shrink-0"
           >
-            Calibrar Meu Treino
+            Configurar
           </button>
         </div>
       )}
 
       {/* 2. Próximo Treino em Destaque */}
       {nextWorkout ? (
-        <div className="relative overflow-hidden bg-gradient-to-br from-amber-500/20 via-slate-900 to-slate-900 border border-amber-500/30 rounded-3xl p-5 shadow-xl">
+        <div className="relative overflow-hidden bg-[#111114] border border-white/[0.08] rounded-2xl p-5 shadow-lg">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="px-2.5 py-0.5 bg-amber-500 text-slate-950 text-[10px] font-black uppercase tracking-wider rounded-full">
+              <span className="text-[10px] font-semibold tracking-wider uppercase text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
                 Próximo Treino
               </span>
-              <h2 className="text-xl font-black text-slate-100 mt-2">
+              <h2 className="text-xl font-bold text-slate-100 mt-2 tracking-tight">
                 {nextWorkout.day.name}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -178,16 +173,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
             <button
               type="button"
               onClick={() => startRoutineWorkout(nextWorkout.routine, nextWorkout.day)}
-              className="px-5 py-3 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-black rounded-2xl flex items-center gap-2 shadow-lg shadow-amber-500/30 transition-all shrink-0"
+              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 transition-all shrink-0"
             >
-              <Play size={16} className="fill-current" /> Iniciar
+              <Play size={14} className="fill-current" /> Iniciar
             </button>
           </div>
 
           {/* Mini pré-visualização dos exercícios */}
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06] flex items-center justify-between text-xs text-slate-400">
             <div className="truncate max-w-sm">
-              <span className="font-semibold text-slate-300">Exercícios: </span>
+              <span className="font-medium text-slate-300">Exercícios: </span>
               {nextWorkout.day.exercises
                 .map((e) => exerciseMap.get(e.exerciseId)?.namePt || 'Exercício')
                 .slice(0, 3)
@@ -197,54 +192,54 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
             <button
               type="button"
               onClick={() => onNavigateToTab('routines')}
-              className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1 shrink-0 ml-2"
+              className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 shrink-0 ml-2"
             >
               Ver rotinas <ArrowRight size={13} />
             </button>
           </div>
         </div>
       ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 flex items-center justify-between">
+        <div className="bg-[#111114] border border-white/[0.08] rounded-2xl p-5 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-slate-100">Começa um Treino Rápido</h3>
+            <h3 className="text-sm font-semibold text-slate-100">Começar Treino Livre</h3>
             <p className="text-xs text-slate-400 mt-0.5">Sem plano definido? Regista na hora.</p>
           </div>
           <button
             type="button"
             onClick={() => startQuickWorkout()}
-            className="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md"
+            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-1.5"
           >
-            <Play size={14} className="fill-current" /> Iniciar Agora
+            <Play size={13} className="fill-current" /> Iniciar Agora
           </button>
         </div>
       )}
 
       {/* 3. Cards de Métricas Semanais */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="bg-[#111114] border border-white/[0.07] rounded-xl p-4">
+          <span className="text-[11px] font-medium text-slate-400 tracking-tight block">
             Treinos esta semana
           </span>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-2xl font-black text-slate-100 font-mono">
+          <div className="flex items-baseline gap-1 mt-1.5">
+            <span className="text-2xl font-bold text-slate-100 font-mono">
               {stats.thisWeekCount}
             </span>
-            <span className="text-xs text-slate-500 font-medium">sessões</span>
+            <span className="text-xs text-slate-500">sessões</span>
           </div>
         </div>
 
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="bg-[#111114] border border-white/[0.07] rounded-xl p-4">
+          <span className="text-[11px] font-medium text-slate-400 tracking-tight block">
             Volume Semanal
           </span>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-2xl font-black text-slate-100 font-mono">
+          <div className="flex items-baseline gap-1 mt-1.5">
+            <span className="text-2xl font-bold text-slate-100 font-mono">
               {formatWeight(stats.thisWeekVolume, unit)}
             </span>
           </div>
           {stats.volumeDiffPercent !== 0 && (
             <span
-              className={`text-[10px] font-bold mt-0.5 block ${
+              className={`text-[10px] font-medium mt-1 block ${
                 stats.volumeDiffPercent > 0 ? 'text-emerald-400' : 'text-slate-500'
               }`}
             >
@@ -253,15 +248,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
           )}
         </div>
 
-        <div className="col-span-2 sm:col-span-1 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-sm">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+        <div className="col-span-2 sm:col-span-1 bg-[#111114] border border-white/[0.07] rounded-xl p-4">
+          <span className="text-[11px] font-medium text-slate-400 tracking-tight block">
             Treinos Totais
           </span>
-          <div className="flex items-baseline gap-1 mt-1">
-            <span className="text-2xl font-black text-slate-100 font-mono">
+          <div className="flex items-baseline gap-1 mt-1.5">
+            <span className="text-2xl font-bold text-slate-100 font-mono">
               {completedSessions.length}
             </span>
-            <span className="text-xs text-slate-500 font-medium">concluídos</span>
+            <span className="text-xs text-slate-500">concluídos</span>
           </div>
         </div>
       </div>
@@ -271,37 +266,37 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
 
       {/* 5. PRs Recentes Conquistados */}
       {prs.length > 0 && (
-        <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-3">
+        <div className="bg-[#111114] border border-white/[0.08] rounded-2xl p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-              <Award size={16} className="text-amber-400" />
+            <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wide flex items-center gap-2">
+              <Award size={15} className="text-amber-400" />
               Recordes Pessoais Recentes
             </h3>
             <button
               type="button"
               onClick={() => onNavigateToTab('analytics')}
-              className="text-xs font-semibold text-amber-400 hover:text-amber-300"
+              className="text-xs font-medium text-amber-400 hover:text-amber-300"
             >
               Ver todos
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             {prs.map((pr) => {
               const meta = exerciseMap.get(pr.exerciseId);
               return (
                 <div
                   key={pr.id}
-                  className="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-3 flex flex-col justify-between"
+                  className="bg-[#18181c] border border-white/[0.06] rounded-xl p-3 flex flex-col justify-between"
                 >
-                  <span className="text-xs font-bold text-slate-200 truncate">
+                  <span className="text-xs font-medium text-slate-200 truncate">
                     {meta?.namePt || 'Exercício'}
                   </span>
                   <div className="flex items-baseline justify-between mt-2">
-                    <span className="text-[10px] text-slate-500 uppercase font-bold">
+                    <span className="text-[10px] text-slate-400 uppercase font-semibold">
                       {pr.type === 'max_weight' ? 'Carga Máx' : '1RM Est.'}
                     </span>
-                    <span className="text-sm font-black text-amber-400 font-mono">
+                    <span className="text-sm font-bold text-amber-400 font-mono">
                       {formatWeight(pr.value, unit)}
                     </span>
                   </div>

@@ -68,19 +68,19 @@ export const PwaInstallPrompt: React.FC = () => {
 
   return (
     <div className="fixed top-3 left-3 right-3 max-w-md mx-auto z-50 animate-slide-down">
-      <div className="bg-slate-900/95 backdrop-blur-xl border border-amber-500/40 rounded-2xl p-3.5 shadow-2xl shadow-amber-500/10 text-slate-100 flex items-center justify-between gap-3">
+      <div className="bg-[#121215]/95 backdrop-blur-xl border border-white/[0.08] rounded-xl p-3 shadow-xl text-slate-100 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-            {showIosGuide ? <Share size={20} /> : <Download size={20} />}
+          <div className="w-9 h-9 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+            {showIosGuide ? <Share size={18} /> : <Download size={18} />}
           </div>
           <div className="min-w-0">
-            <h4 className="text-xs font-black tracking-tight text-slate-100">
-              Instala no teu Telemóvel
+            <h4 className="text-xs font-semibold tracking-tight text-slate-100">
+              Instalar Aplicação
             </h4>
             <p className="text-[11px] text-slate-400 leading-tight mt-0.5 truncate">
               {showIosGuide
-                ? "Toca em Partilhar e depois 'Ecrã Principal'"
-                : 'Usa offline e com ecrã completo no ginásio'}
+                ? "Toca em Partilhar e 'Ecrã Principal'"
+                : 'Usa offline e em ecrã completo no ginásio'}
             </p>
           </div>
         </div>
@@ -90,14 +90,14 @@ export const PwaInstallPrompt: React.FC = () => {
             <button
               type="button"
               onClick={handleInstallClick}
-              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-black text-xs rounded-xl transition-all shadow-sm"
+              className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-semibold text-xs rounded-lg transition-all"
             >
               Instalar
             </button>
           )}
 
           {showIosGuide && (
-            <div className="flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-500/15 px-2 py-1 rounded-xl">
+            <div className="flex items-center gap-1 text-[11px] font-medium text-amber-400 bg-amber-500/10 px-2 py-1 rounded-lg">
               <PlusSquare size={13} />
               <span>Adicionar</span>
             </div>
@@ -106,10 +106,10 @@ export const PwaInstallPrompt: React.FC = () => {
           <button
             type="button"
             onClick={handleDismiss}
-            className="p-1.5 text-slate-500 hover:text-slate-300 rounded-lg transition-colors"
+            className="p-1 text-slate-500 hover:text-slate-300 rounded-md transition-colors"
             title="Fechar aviso"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
       </div>
