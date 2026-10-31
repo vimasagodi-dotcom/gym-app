@@ -113,7 +113,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
       {
         id: `fb-day-c-${Date.now()}`,
         name: 'Dia C: Full Body (Foco Hipertrofia & Hip Thrust)',
-        description: 'Quadríceps, glúteos, peitoral inclinado e braços.',
+        description: 'Quadricípites, glúteos, peitoral inclinado e braços.',
         order: 3,
         exercises: [
           createExercise('barbell-hip-thrust', 1, defaultSets),
@@ -128,7 +128,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
   } else if (daysPerWeek === 4) {
     // 4 DIAS: UPPER / LOWER
     routineTitle = `Upper / Lower 4x — ${goalLabel} (${experience.toUpperCase()})`;
-    routineDesc = `Divisão padrão ouro de 4 dias. Treina cada grupo muscular 2 vezes por semana com equilíbrio perfeito entre recuperação e volume.`;
+    routineDesc = `Divisão de referência de 4 dias. Treina cada grupo muscular 2 vezes por semana com equilíbrio perfeito entre recuperação e volume.`;
 
     days = [
       {
@@ -147,7 +147,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
       },
       {
         id: `ul-l1-${Date.now()}`,
-        name: 'Lower A (Inferior: Foco Quadríceps & Agachamento)',
+        name: 'Lower A (Inferior: Foco Quadricípites & Agachamento)',
         description: 'Agachamento às costas, flexoras e gémeos.',
         order: 2,
         exercises: [
@@ -210,8 +210,8 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         },
         {
           id: `arnold-2-${Date.now()}`,
-          name: 'Dia 2: Ombros & Braços (Bícep & Trícep)',
-          description: 'Press militar, laterais, curl pesado e extensão de tríceps.',
+          name: 'Dia 2: Ombros & Braços (Bicípites & Tricípites)',
+          description: 'Press militar, laterais, curl pesado e extensão de tricípites.',
           order: 2,
           exercises: [
             createExercise('overhead-barbell-press', 1, 4),
@@ -225,7 +225,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         {
           id: `arnold-3-${Date.now()}`,
           name: 'Dia 3: Pernas & Gémeos',
-          description: 'Agachamento pesado, flexores e panturrilha.',
+          description: 'Agachamento pesado, flexores e gémeos.',
           order: 3,
           exercises: [
             createExercise('barbell-back-squat', 1, 4),
@@ -268,7 +268,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
       days = [
         {
           id: `ppl-1-${Date.now()}`,
-          name: 'Push A (Peito Pesado, Ombros & Tríceps)',
+          name: 'Push A (Peito Pesado, Ombros & Tricípites)',
           description: 'Supino com barra, press militar e fundos.',
           order: 1,
           exercises: [
@@ -281,7 +281,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         },
         {
           id: `ppl-2-${Date.now()}`,
-          name: 'Pull A (Costas Densidade, Bíceps & Posterior Ombro)',
+          name: 'Pull A (Costas Densidade, Bicípites & Posterior Ombro)',
           description: 'Remadas pesadas, puxadas e curls.',
           order: 2,
           exercises: [
@@ -295,7 +295,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         {
           id: `ppl-3-${Date.now()}`,
           name: 'Legs A (Agachamento, Glúteos & Isquiotibiais)',
-          description: 'Agachamento com barra, RDL e panturrilha.',
+          description: 'Agachamento com barra, RDL e gémeos.',
           order: 3,
           exercises: [
             createExercise('barbell-back-squat', 1, 4),
@@ -307,8 +307,8 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         },
         {
           id: `ppl-4-${Date.now()}`,
-          name: 'Push B (Peito Superior, Ombros Laterais & Tríceps)',
-          description: 'Foco na porção clavicular do peito e cabeça longa do tríceps.',
+          name: 'Push B (Peito Superior, Ombros Laterais & Tricípites)',
+          description: 'Foco na porção clavicular do peito e cabeça longa do tricípite.',
           order: 4,
           exercises: [
             createExercise('incline-dumbbell-press', 1, 4),
@@ -320,7 +320,7 @@ export function generateSmartWorkoutPlan(params: OnboardingParams): RecommendedP
         },
         {
           id: `ppl-5-${Date.now()}`,
-          name: 'Pull B (Largura de Dorsal & Bíceps)',
+          name: 'Pull B (Largura de Dorsal & Bicípites)',
           description: 'Pull-ups, remada sentada no cabo e curls inclinados.',
           order: 5,
           exercises: [

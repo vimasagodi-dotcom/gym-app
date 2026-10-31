@@ -222,7 +222,7 @@ export const SmartPlanOnboardingModal: React.FC<SmartPlanOnboardingModalProps> =
                           : 'bg-slate-950/40 border-slate-800 text-slate-400 hover:bg-slate-800'
                       }`}
                     >
-                      {lvl === 'beginner' ? 'Iniciante' : lvl === 'intermediate' ? 'Intermédio' : 'Avançado'}
+                      {lvl === 'beginner' ? 'Principiante' : lvl === 'intermediate' ? 'Intermédio' : 'Avançado'}
                     </button>
                   ))}
                 </div>
@@ -245,7 +245,7 @@ export const SmartPlanOnboardingModal: React.FC<SmartPlanOnboardingModalProps> =
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { days: 3, label: '3 Dias / semana', split: 'Full Body 3x (A / B / C)', desc: 'Frequência total com estímulo máximo por sessão' },
-                  { days: 4, label: '4 Dias / semana', split: 'Upper / Lower (Superior / Inferior)', desc: 'Equilíbrio padrão ouro para síntese proteica' },
+                  { days: 4, label: '4 Dias / semana', split: 'Upper / Lower (Superior / Inferior)', desc: 'Equilíbrio de referência para síntese proteica' },
                   { days: 5, label: '5 Dias / semana', split: 'PPL Pro ou Arnold Split', desc: 'Volume alto com isolamento preciso de cada músculo' },
                   { days: 6, label: '6 Dias / semana', split: 'Push / Pull / Legs 6x', desc: 'Frequência máxima e hipertrofia acelerada' },
                 ].map((item) => (
@@ -342,7 +342,7 @@ export const SmartPlanOnboardingModal: React.FC<SmartPlanOnboardingModalProps> =
               onClick={handleGenerate}
               className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-amber-500/20 transition-all active:scale-95"
             >
-              <Sparkles size={16} /> Gerar Meu Plano
+              <Sparkles size={16} /> Gerar o Meu Plano
             </button>
           ) : (
             <button

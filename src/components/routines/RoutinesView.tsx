@@ -95,7 +95,7 @@ export const RoutinesView: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Meus Planos ({myRoutines.length})
+          Os Meus Planos ({myRoutines.length})
         </button>
         <button
           type="button"

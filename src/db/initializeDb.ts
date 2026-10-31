@@ -33,19 +33,8 @@ async function doInitializeDatabase(): Promise<void> {
     await db.users.put(defaultUser);
   }
 
-  // 2. Popula os exercícios iniciais
-  const exerciseCount = await db.exercises.count();
-  if (exerciseCount === 0) {
-    await db.exercises.bulkPut(INITIAL_EXERCISES);
-  } else {
-    // Garante que novos exercícios do seed sejam adicionados caso a base existente tenha menos
-    for (const ex of INITIAL_EXERCISES) {
-      const exists = await db.exercises.get(ex.id);
-      if (!exists) {
-        await db.exercises.put(ex);
-      }
-    }
-  }
+  // 2. Popula e sincroniza os exercícios atualizados em PT-PT
+  await db.exercises.bulkPut(INITIAL_EXERCISES);
 
   // 3. Popula rotinas pré-definidas
   const routineCount = await db.routines.count();
@@ -53,8 +42,7 @@ async function doInitializeDatabase(): Promise<void> {
     await db.routines.bulkPut(INITIAL_ROUTINES);
   } else {
     for (const r of INITIAL_ROUTINES) {
-      const exists = await db.routines.get(r.id);
-      if (!exists) {
+      if (r.isTemplate) {
         await db.routines.put(r);
       }
     }
@@ -72,7 +60,7 @@ async function doInitializeDatabase(): Promise<void> {
       id: 'sample-push-session',
       userId: 'default-user',
       routineId: 'ppl-classic-routine',
-      name: 'Push (Peito, Ombros & Tríceps)',
+      name: 'Push (Peito, Ombros & Tricípites)',
       startedAt: pushDate.toISOString(),
       completedAt: new Date(pushDate.getTime() + 52 * 60 * 1000).toISOString(),
       durationSeconds: 3120, // 52 min
@@ -80,7 +68,7 @@ async function doInitializeDatabase(): Promise<void> {
       totalSetsCompleted: 14,
       totalRepsCompleted: 132,
       rating: 5,
-      notes: 'Sensação excelente no supino, boa congestão muscular nos tríceps.',
+      notes: 'Sensação excelente no supino, boa congestão muscular nos tricípites.',
       exercises: [
         {
           id: 's-ex-1',
@@ -145,7 +133,7 @@ async function doInitializeDatabase(): Promise<void> {
       id: 'sample-pull-session',
       userId: 'default-user',
       routineId: 'ppl-classic-routine',
-      name: 'Pull (Costas & Bíceps)',
+      name: 'Pull (Costas & Bicípites)',
       startedAt: pullDate.toISOString(),
       completedAt: new Date(pullDate.getTime() + 48 * 60 * 1000).toISOString(),
       durationSeconds: 2880, // 48 min
@@ -153,7 +141,7 @@ async function doInitializeDatabase(): Promise<void> {
       totalSetsCompleted: 13,
       totalRepsCompleted: 118,
       rating: 4,
-      notes: 'Puxadas pesadas e bom controlo de escapulas.',
+      notes: 'Puxadas pesadas e bom controlo de omoplatas.',
       exercises: [
         {
           id: 's-ex-5',

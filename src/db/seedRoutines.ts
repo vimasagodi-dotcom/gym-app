@@ -6,7 +6,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     id: 'ppl-classic-routine',
     userId: 'default-user',
     title: 'Push / Pull / Legs (PPL Clássico)',
-    description: 'A divisão mais comprovada para ganhos de hipertrofia e força. Divide o corpo em movimentos de empurrar (peito, ombros, tríceps), puxar (costas, bíceps) e membros inferiores.',
+    description: 'A divisão mais comprovada para ganhos de hipertrofia e força. Divide o corpo em movimentos de empurrar (peito, ombros, tricípites), puxar (costas, bicípites) e membros inferiores.',
     level: 'intermediate',
     daysPerWeek: 3,
     category: 'ppl',
@@ -16,7 +16,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     days: [
       {
         id: 'ppl-push-day',
-        name: 'Dia 1: Push (Peito, Ombros & Tríceps)',
+        name: 'Dia 1: Push (Peito, Ombros & Tricípites)',
         description: 'Foco no peitoral, deltoides anterior/lateral e extensores de cotovelo.',
         order: 1,
         exercises: [
@@ -75,7 +75,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ppl-pull-day',
-        name: 'Dia 2: Pull (Costas, Deltoide Posterior & Bíceps)',
+        name: 'Dia 2: Pull (Costas, Deltoide Posterior & Bicípites)',
         description: 'Construção da largura do dorsal, densidade das costas e flexores de braço.',
         order: 2,
         exercises: [
@@ -133,7 +133,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ppl-legs-day',
-        name: 'Dia 3: Legs (Quadríceps, Isquiotibiais, Glúteos & Gémeos)',
+        name: 'Dia 3: Legs (Quadricípites, Isquiotibiais, Glúteos & Gémeos)',
         description: 'Desenvolvimento equilibrado e completo da cadeia inferior.',
         order: 3,
         exercises: [
@@ -220,7 +220,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ul-lower-1',
-        name: 'Lower A (Inferior - Foco Quadríceps & Agachamento)',
+        name: 'Lower A (Inferior - Foco Quadricípites & Agachamento)',
         order: 2,
         exercises: [
           { id: 'l1', exerciseId: 'barbell-back-squat', order: 1, targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, restSeconds: 150 },
@@ -273,7 +273,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     days: [
       {
         id: 'g-day-1',
-        name: 'Dia 1: Glúteos Máximos & Quadríceps',
+        name: 'Dia 1: Glúteos Máximos & Quadricípites',
         order: 1,
         exercises: [
           { id: 'g1', exerciseId: 'barbell-hip-thrust', order: 1, targetSets: 4, targetRepsMin: 8, targetRepsMax: 12, restSeconds: 120 },

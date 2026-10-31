@@ -5,7 +5,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'barbell-bench-press',
     name: 'Barbell Bench Press',
-    namePt: 'Supino Reto com Barra',
+    namePt: 'Supino Plano com Barra',
     primaryMuscles: ['chest'],
     secondaryMuscles: ['triceps', 'shoulders'],
     equipment: 'barbell',
@@ -191,13 +191,13 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'barbell-bicep-curl',
     name: 'Barbell Bicep Curl',
-    namePt: 'Curl de Bíceps com Barra W ou Reta',
+    namePt: 'Curl de Bicípites com Barra W ou Reta',
     primaryMuscles: ['biceps'],
     secondaryMuscles: ['forearms'],
     equipment: 'barbell',
     movementType: 'isolation',
     difficulty: 'beginner',
-    instructionsPt: 'Em pé, segura a barra à largura dos ombros com pegada supinada. Mantém os cotovelos colados ao tronco e flete os antebraços subindo a barra em direção ao peito. Desce com amplitude completa.',
+    instructionsPt: 'De pé, segura a barra à largura dos ombros com pegada supinada. Mantém os cotovelos fixos ao tronco e flete os antebraços subindo a barra em direção ao peito. Desce com amplitude completa.',
     tips: ['Não balances o tronco para dar balanço', 'Mantém os cotovelos fixos ao lado do corpo'],
   },
   {
@@ -209,7 +209,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'dumbbell',
     movementType: 'isolation',
     difficulty: 'intermediate',
-    instructionsPt: 'Senta-te num banco inclinado a 60º. Deixa os braços penderem verticalmente para um alongamento máximo da cabeça longa do bíceps. Enrola os halteres supinando os pulsos.',
+    instructionsPt: 'Senta-te num banco inclinado a 60º. Deixa os braços penderem verticalmente para um alongamento máximo da cabeça longa do bicípite. Enrola os halteres supinando os pulsos.',
     tips: ['Alongamento muito intenso, começa com peso moderado', 'Não deixes os cotovelos avançarem'],
   },
   {
@@ -229,7 +229,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'tricep-rope-pushdown',
     name: 'Tricep Rope Pushdown',
-    namePt: 'Tríceps na Polia com Corda',
+    namePt: 'Extensão de Tricípites na Polia com Corda',
     primaryMuscles: ['triceps'],
     secondaryMuscles: ['forearms'],
     equipment: 'cable',
@@ -241,7 +241,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'skull-crushers',
     name: 'Lying Triceps Extension (Skull Crushers)',
-    namePt: 'Tríceps Testa com Barra W',
+    namePt: 'Tricípites à Testa com Barra W',
     primaryMuscles: ['triceps'],
     secondaryMuscles: [],
     equipment: 'barbell',
@@ -253,14 +253,14 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'overhead-cable-tricep-extension',
     name: 'Overhead Cable Triceps Extension',
-    namePt: 'Extensão de Tríceps Acima da Cabeça no Cabo',
+    namePt: 'Extensão de Tricípites Acima da Cabeça no Cabo',
     primaryMuscles: ['triceps'],
     secondaryMuscles: [],
     equipment: 'cable',
     movementType: 'isolation',
     difficulty: 'intermediate',
-    instructionsPt: 'Posiciona a polia na altura média/baixa. Vira-te de costas para o cabo segurando a corda acima e atrás da cabeça. Estende os cotovelos para a frente, aproveitando o alongamento da cabeça longa do tríceps.',
-    tips: ['Excelente para hipertrofia da cabeça longa do tríceps', 'Não abras os cotovelos'],
+    instructionsPt: 'Posiciona a polia na altura média/baixa. Vira-te de costas para o cabo segurando a corda acima e atrás da cabeça. Estende os cotovelos para a frente, aproveitando o alongamento da cabeça longa do tricípite.',
+    tips: ['Excelente para hipertrofia da cabeça longa do tricípite', 'Não abras os cotovelos'],
   },
 
   // --- ANTEBRAÇOS (FOREARMS) ---
@@ -393,14 +393,14 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'leg-extension',
     name: 'Leg Extension',
-    namePt: 'Cadeira Extensora de Quadríceps',
+    namePt: 'Extensão de Pernas na Máquina (Cadeira Extensora)',
     primaryMuscles: ['quads'],
     secondaryMuscles: [],
     equipment: 'machine',
     movementType: 'isolation',
     difficulty: 'beginner',
     instructionsPt: 'Ajusta o rolo para ficar na frente das canelas logo acima dos tornozelos. Senta-te e segura as pegas laterais. Estende as pernas elevando a carga e segura 1 segundo no topo antes de descer com lentidão.',
-    tips: ['Isolamento puro do reto femoral e vastos', 'Controla a descida sem deixar o peso bater'],
+    tips: ['Isolamento dos quadricípites', 'Controla a descida sem deixar o peso bater'],
   },
   {
     id: 'goblet-squat',
@@ -425,13 +425,13 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'barbell',
     movementType: 'compound',
     difficulty: 'intermediate',
-    instructionsPt: 'Em pé, segura a barra ou halteres à largura dos ombros. Joelhos ligeiramente destravados e fixos nesse ângulo. Empurra a anca para trás projetando o rabo para a parede atrás de ti enquanto a barra desce rente às pernas até sentires grande estiramento nos isquiotibiais.',
+    instructionsPt: 'De pé, segura a barra ou halteres à largura dos ombros. Joelhos ligeiramente destravados e fixos nesse ângulo. Empurra a anca para trás enquanto a barra desce rente às pernas até sentires grande estiramento nos isquiotibiais.',
     tips: ['O movimento é uma dobradiça de anca (hip hinge), não um agachamento', 'Mantém a coluna estritamente reta'],
   },
   {
     id: 'seated-leg-curl',
     name: 'Seated Leg Curl',
-    namePt: 'Cadeira Flexora Sentada',
+    namePt: 'Flexão de Pernas Sentado na Máquina',
     primaryMuscles: ['hamstrings'],
     secondaryMuscles: ['calves'],
     equipment: 'machine',
@@ -443,7 +443,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'lying-leg-curl',
     name: 'Lying Leg Curl',
-    namePt: 'Mesa Flexora Deitada',
+    namePt: 'Flexão de Pernas Deitado na Máquina',
     primaryMuscles: ['hamstrings'],
     secondaryMuscles: ['calves'],
     equipment: 'machine',
@@ -453,7 +453,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     tips: ['Mantém a bacia colada ao banco durante a flexão'],
   },
 
-  // --- GÉMEOS / PANTURRILHA (CALVES) ---
+  // --- GÉMEOS (CALVES) ---
   {
     id: 'standing-calf-raise',
     name: 'Standing Calf Raise',
@@ -519,13 +519,13 @@ export const INITIAL_EXERCISES: Exercise[] = [
   {
     id: 'lat-pullover-cable',
     name: 'Cable Lat Pullover / Straight-Arm Pushdown',
-    namePt: 'Pullover no Cabo com Braços Retos',
+    namePt: 'Pullover no Cabo com Braços Estendidos',
     primaryMuscles: ['lats'],
     secondaryMuscles: ['triceps', 'chest', 'abs'],
     equipment: 'cable',
     movementType: 'isolation',
     difficulty: 'beginner',
-    instructionsPt: 'Com a barra na polia alta e braços quase retos, empurra a barra em arco para baixo até às coxas contraindo as grandes dorsais.',
-    tips: ['Isolamento dos dorsais sem fadiga dos bíceps'],
+    instructionsPt: 'Com a barra na polia alta e braços quase estendidos, empurra a barra em arco para baixo até às coxas contraindo as grandes dorsais.',
+    tips: ['Isolamento dos dorsais sem fadiga dos bicípites'],
   },
 ];

@@ -16,7 +16,7 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
   onClose,
   onSave,
 }) => {
-  const [title, setTitle] = useState(initialRoutine?.title || 'Minha Nova Rotina');
+  const [title, setTitle] = useState(initialRoutine?.title || 'O Meu Novo Plano');
   const [description, setDescription] = useState(initialRoutine?.description || 'Plano de hipertrofia personalizado');
   const [level, setLevel] = useState<'beginner' | 'intermediate' | 'advanced'>(initialRoutine?.level || 'intermediate');
 
@@ -187,7 +187,7 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
                         : 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800'
                     }`}
                   >
-                    {lvl === 'beginner' ? 'Iniciante' : lvl === 'intermediate' ? 'Intermédio' : 'Avançado'}
+                    {lvl === 'beginner' ? 'Principiante' : lvl === 'intermediate' ? 'Intermédio' : 'Avançado'}
                   </button>
                 ))}
               </div>
