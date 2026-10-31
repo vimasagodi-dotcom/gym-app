@@ -7,6 +7,7 @@ import { MuscleDiagram } from '../anatomy/MuscleDiagram';
 import { ExerciseSetRow } from './ExerciseSetRow';
 import { ExercisePickerModal } from './ExercisePickerModal';
 import { WorkoutSummaryModal } from './WorkoutSummaryModal';
+import { ExerciseVideoModal } from '../exercises/ExerciseVideoModal';
 import { formatDuration } from '../../utils/formulas';
 import type { WorkoutSession } from '../../types/workout';
 import {
@@ -17,6 +18,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Info,
+  Play,
 } from 'lucide-react';
 
 export const ActiveWorkoutView: React.FC = () => {
@@ -37,6 +39,7 @@ export const ActiveWorkoutView: React.FC = () => {
 
   const { silhouette } = useUser();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [completedSummary, setCompletedSummary] = useState<WorkoutSession | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
@@ -141,17 +144,26 @@ export const ActiveWorkoutView: React.FC = () => {
           {/* Cartão de Detalhe e Diagrama Anatómico */}
           <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex-1 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <h2 className="text-xl font-black text-slate-100">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                <h2 className="text-lg sm:text-xl font-bold text-slate-100">
                   {currentExerciseMeta.namePt}
                 </h2>
+                <button
+                  type="button"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-400 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-sm"
+                  title="Ver vídeo demonstrativo e biomecânica"
+                >
+                  <Play size={12} className="fill-current" />
+                  <span>Ver Vídeo</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => setShowInstructions(!showInstructions)}
                   className="p-1 text-slate-400 hover:text-amber-400"
                   title="Ver instruções de execução"
                 >
-                  <Info size={18} />
+                  <Info size={17} />
                 </button>
               </div>
               <p className="text-xs text-slate-400 mt-1">{currentExerciseMeta.name}</p>
@@ -340,6 +352,13 @@ export const ActiveWorkoutView: React.FC = () => {
       <WorkoutSummaryModal
         session={completedSummary}
         onClose={() => setCompletedSummary(null)}
+      />
+
+      {/* Modal de Demonstração em Vídeo e Biomecânica */}
+      <ExerciseVideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        exercise={currentExerciseMeta || null}
       />
     </div>
   );

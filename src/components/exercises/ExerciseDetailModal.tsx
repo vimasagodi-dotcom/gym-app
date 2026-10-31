@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Exercise } from '../../types/exercise';
 import { MuscleDiagram } from '../anatomy/MuscleDiagram';
+import { ExerciseVideoModal } from './ExerciseVideoModal';
 import { useUser } from '../../context/ThemeContext';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import { formatWeight } from '../../utils/formulas';
-import { X, Award, Dumbbell, Sparkles, BookOpen } from 'lucide-react';
+import { X, Award, Dumbbell, Sparkles, BookOpen, Play } from 'lucide-react';
 
 interface ExerciseDetailModalProps {
   exercise: Exercise | null;
@@ -17,6 +18,7 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
   onClose,
 }) => {
   const { silhouette, unit } = useUser();
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const prs = useLiveQuery(
     () => (exercise ? db.personalRecords.where('exerciseId').equals(exercise.id).toArray() : []),
@@ -96,6 +98,15 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
             </div>
           </div>
 
+          {/* Botão de Destaque: Ver Demonstração em Vídeo & Guia Biomecânico */}
+          <button
+            type="button"
+            onClick={() => setIsVideoModalOpen(true)}
+            className="w-full py-3 px-4 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm"
+          >
+            <Play size={16} className="fill-current" /> Ver Demonstração em Vídeo (Técnica & Fases)
+          </button>
+
           {/* Recordes Pessoais Registados para este exercício */}
           <div className="bg-slate-800/30 border border-slate-800/80 rounded-2xl p-4">
             <div className="flex items-center gap-2 text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">
@@ -156,6 +167,13 @@ export const ExerciseDetailModal: React.FC<ExerciseDetailModalProps> = ({
           )}
         </div>
       </div>
+
+      {/* Modal Dedicado de Vídeo e Técnica */}
+      <ExerciseVideoModal
+        isOpen={isVideoModalOpen}
+        onClose={() => setIsVideoModalOpen(false)}
+        exercise={exercise}
+      />
     </div>
   );
 };
