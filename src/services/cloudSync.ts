@@ -128,3 +128,4 @@ export async function syncAllUserDataWithCloud(uid: string): Promise<void> {
     console.warn('Sincronização com a nuvem em segundo plano:', err);
   }
 }
+

@@ -13,11 +13,18 @@ import { ActiveWorkoutView } from './components/workout/ActiveWorkoutView';
 import { RestTimerOverlay } from './components/workout/RestTimerOverlay';
 import { BottomNav, type NavTab } from './components/common/BottomNav';
 import { PwaInstallPrompt } from './components/common/PwaInstallPrompt';
-import { Dumbbell, Loader2 } from 'lucide-react';
+import { AuthModal } from './components/auth/AuthModal';
+import { useAuth } from './context/AuthContext';
+import { Dumbbell, Loader2, LogIn, X } from 'lucide-react';
 
 const MainAppContent: React.FC = () => {
   const { isActive } = useWorkout();
+  const { user, isFirebaseActive } = useAuth();
   const [currentTab, setCurrentTab] = useState<NavTab>('dashboard');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [dismissedLoginBanner, setDismissedLoginBanner] = useState(() => {
+    return localStorage.getItem('gymapp_login_prompt_dismissed') === 'true';
+  });
 
   // Se o utilizador iniciar um treino ativo, transita automaticamente para a aba de treino
   useEffect(() => {
@@ -26,10 +33,58 @@ const MainAppContent: React.FC = () => {
     }
   }, [isActive]);
 
+  const handleDismissBanner = () => {
+    setDismissedLoginBanner(true);
+    localStorage.setItem('gymapp_login_prompt_dismissed', 'true');
+  };
+
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex flex-col font-sans w-full max-w-full overflow-x-hidden">
-      {/* Banner PWA de Instalação para Android & iOS */}
+      {/* 1. Banner PWA de Instalação para Android & iOS */}
       <PwaInstallPrompt />
+
+      {/* 2. Banner de Início de Sessão no Topo (como o banner de instalar, se não tiver sessão iniciada) */}
+      {!user && !dismissedLoginBanner && isFirebaseActive && (
+        <div className="fixed top-16 left-3 right-3 max-w-md mx-auto z-40 animate-slide-down">
+          <div className="bg-[#111114]/95 backdrop-blur-xl border border-lime-400/30 rounded-xl p-3 shadow-xl text-slate-100 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-9 h-9 rounded-lg bg-lime-400/15 text-lime-400 flex items-center justify-center shrink-0">
+                <LogIn size={18} />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-xs font-bold tracking-tight text-slate-100 flex items-center gap-1.5">
+                  Iniciar Sessão
+                  <span className="text-[10px] px-1.5 py-0.2 bg-lime-400/20 text-lime-400 rounded-full font-mono font-bold">
+                    Nuvem
+                  </span>
+                </h4>
+                <p className="text-[11px] text-slate-400 leading-tight mt-0.5 truncate">
+                  Guarda os teus treinos no calendário sem perder dados.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsAuthModalOpen(true)}
+                className="px-3 py-1.5 bg-lime-400 hover:bg-lime-300 active:scale-95 text-slate-950 font-bold text-xs rounded-lg transition-all shadow-sm"
+              >
+                Entrar
+              </button>
+              <button
+                type="button"
+                onClick={handleDismissBanner}
+                className="p-1 text-slate-500 hover:text-slate-300 rounded-md transition-colors"
+                title="Lembrar mais tarde"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Visualização de Treino Ativo focado */}
       {isActive && currentTab === 'workout' ? (
         <ActiveWorkoutView />
@@ -46,6 +101,12 @@ const MainAppContent: React.FC = () => {
           {currentTab === 'settings' && <SettingsView />}
         </main>
       )}
+
+      {/* Modal de Autenticação */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
 
       {/* Temporizador de Descanso Flutuante Global com Web Audio API */}
       <RestTimerOverlay />
