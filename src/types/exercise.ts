@@ -69,3 +69,21 @@ export const MUSCLE_GROUPS_INFO: Record<MuscleGroup, MuscleGroupInfo> = {
   hamstrings: { id: 'hamstrings', namePt: 'Isquiotibiais', nameEn: 'Hamstrings', view: 'posterior', category: 'lower' },
   calves: { id: 'calves', namePt: 'Gémeos', nameEn: 'Calves', view: 'both', category: 'lower' },
 };
+
+export const EQUIPMENT_LABELS_PT: Record<EquipmentType, string> = {
+  barbell: 'Barra',
+  dumbbell: 'Halteres',
+  machine: 'Máquina',
+  cable: 'Polia / Cabo',
+  bodyweight: 'Peso Corporal',
+  band: 'Elásticos',
+  smith: 'Máquina Smith',
+  kettlebell: 'Kettlebell',
+  other: 'Outro Equipamento',
+};
+
+export const DIFFICULTY_LABELS_PT: Record<DifficultyLevel, string> = {
+  beginner: 'Principiante',
+  intermediate: 'Intermédio',
+  advanced: 'Avançado',
+};

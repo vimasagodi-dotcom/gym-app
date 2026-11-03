@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import type { Exercise, MuscleGroup, EquipmentType } from '../../types/exercise';
-import { MUSCLE_GROUPS_INFO } from '../../types/exercise';
+import { MUSCLE_GROUPS_INFO, EQUIPMENT_LABELS_PT } from '../../types/exercise';
 import { MuscleDiagram } from '../anatomy/MuscleDiagram';
 import { MuscleSelector } from '../anatomy/MuscleSelector';
 import { ExerciseDetailModal } from './ExerciseDetailModal';
 import { useUser } from '../../context/ThemeContext';
-import { Search, Dumbbell, Sparkles, ChevronRight } from 'lucide-react';
+import { Search, Dumbbell, Sparkles, ChevronRight, Plus, X } from 'lucide-react';
 
 export const ExerciseList: React.FC = () => {
   const { silhouette } = useUser();
@@ -16,6 +16,37 @@ export const ExerciseList: React.FC = () => {
   const [selectedEquipment, setSelectedEquipment] = useState<EquipmentType | 'all'>('all');
   const [activeModalExercise, setActiveModalExercise] = useState<Exercise | null>(null);
   const [showBodyFilter, setShowBodyFilter] = useState(false);
+
+  // Estado para Criar Exercício Personalizado
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newExNamePt, setNewExNamePt] = useState('');
+  const [newExMuscle, setNewExMuscle] = useState<MuscleGroup>('chest');
+  const [newExEquip, setNewExEquip] = useState<EquipmentType>('dumbbell');
+  const [newExMovement, setNewExMovement] = useState<'compound' | 'isolation'>('compound');
+  const [newExNotes, setNewExNotes] = useState('');
+
+  const handleCreateCustomExercise = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newExNamePt.trim()) return;
+
+    const customExercise: Exercise = {
+      id: `ex-custom-${Date.now()}`,
+      name: newExNamePt.trim(),
+      namePt: newExNamePt.trim(),
+      primaryMuscles: [newExMuscle],
+      secondaryMuscles: [],
+      equipment: newExEquip,
+      movementType: newExMovement,
+      difficulty: 'intermediate',
+      instructionsPt: newExNotes.trim() || 'Mantém a postura controlada durante toda a amplitude do movimento.',
+      isCustom: true,
+    };
+
+    await db.exercises.add(customExercise);
+    setNewExNamePt('');
+    setNewExNotes('');
+    setIsCreateOpen(false);
+  };
 
   const exercises = useLiveQuery(() => db.exercises.toArray()) || [];
 
@@ -49,7 +80,7 @@ export const ExerciseList: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 pb-28 space-y-4 animate-fade-in">
       {/* Topo / Header da página */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <h1 className="text-2xl font-black text-slate-100 tracking-tight">
             Base de Exercícios
@@ -59,18 +90,28 @@ export const ExerciseList: React.FC = () => {
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setShowBodyFilter(!showBodyFilter)}
-          className={`px-3 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
-            showBodyFilter
-              ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md shadow-amber-500/20'
-              : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800'
-          }`}
-        >
-          <Sparkles size={15} />
-          {showBodyFilter ? 'Esconder Mapa' : 'Filtrar no Corpo'}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCreateOpen(true)}
+            className="px-3 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all bg-lime-400 text-slate-950 hover:bg-lime-300 shadow-sm"
+          >
+            <Plus size={15} />
+            Criar Exercício
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowBodyFilter(!showBodyFilter)}
+            className={`px-3 py-2 rounded-2xl text-xs font-bold flex items-center gap-1.5 transition-all border ${
+              showBodyFilter
+                ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md shadow-amber-500/20'
+                : 'bg-slate-900 text-slate-300 border-slate-800 hover:bg-slate-800'
+            }`}
+          >
+            <Sparkles size={15} />
+            {showBodyFilter ? 'Esconder Mapa' : 'Filtrar no Corpo'}
+          </button>
+        </div>
       </div>
 
       {/* Mapa do Corpo Humano Interativo (Filtro Anatómico) */}
@@ -141,13 +182,13 @@ export const ExerciseList: React.FC = () => {
               key={eq}
               type="button"
               onClick={() => setSelectedEquipment(eq)}
-              className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap capitalize transition-all ${
+              className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-all ${
                 selectedEquipment === eq
                   ? 'bg-slate-200 text-slate-900 font-bold'
                   : 'bg-slate-900 text-slate-400 hover:bg-slate-800 border border-slate-800'
               }`}
             >
-              {eq}
+              {EQUIPMENT_LABELS_PT[eq] || eq}
             </button>
           ))}
         </div>
@@ -188,8 +229,8 @@ export const ExerciseList: React.FC = () => {
                     <span className="px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400 font-bold">
                       {primaryNames}
                     </span>
-                    <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-400 capitalize">
-                      {exercise.equipment}
+                    <span className="px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">
+                      {EQUIPMENT_LABELS_PT[exercise.equipment] || exercise.equipment}
                     </span>
                   </div>
                 </div>
@@ -215,6 +256,135 @@ export const ExerciseList: React.FC = () => {
         exercise={activeModalExercise}
         onClose={() => setActiveModalExercise(null)}
       />
+
+      {/* Modal para Criar Exercício Personalizado */}
+      {isCreateOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-bold text-slate-100">Criar Novo Exercício</h2>
+              <button
+                type="button"
+                onClick={() => setIsCreateOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-100 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCustomExercise} className="space-y-3">
+              <div>
+                <label className="text-xs font-semibold text-slate-400 block mb-1">
+                  Nome do Exercício (em Português)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newExNamePt}
+                  onChange={(e) => setNewExNamePt(e.target.value)}
+                  placeholder="Ex: Prensa de Pernas Unilateral"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-lime-400"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1">
+                    Músculo Principal
+                  </label>
+                  <select
+                    value={newExMuscle}
+                    onChange={(e) => setNewExMuscle(e.target.value as MuscleGroup)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-lime-400"
+                  >
+                    {Object.values(MUSCLE_GROUPS_INFO).map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.namePt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 block mb-1">
+                    Equipamento
+                  </label>
+                  <select
+                    value={newExEquip}
+                    onChange={(e) => setNewExEquip(e.target.value as EquipmentType)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-lime-400"
+                  >
+                    {equipmentList.map((eq) => (
+                      <option key={eq} value={eq}>
+                        {EQUIPMENT_LABELS_PT[eq]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-400 block mb-1">
+                  Tipo de Movimento
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setNewExMovement('compound')}
+                    className={`py-2 rounded-xl text-xs font-bold border ${
+                      newExMovement === 'compound'
+                        ? 'bg-lime-400 text-slate-950 border-lime-400'
+                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  >
+                    Composto (Multiarticular)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewExMovement('isolation')}
+                    className={`py-2 rounded-xl text-xs font-bold border ${
+                      newExMovement === 'isolation'
+                        ? 'bg-lime-400 text-slate-950 border-lime-400'
+                        : 'bg-slate-950 border-slate-800 text-slate-400'
+                    }`}
+                  >
+                    Isolado (Monoarticular)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-400 block mb-1">
+                  Notas de Execução (Opcional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={newExNotes}
+                  onChange={(e) => setNewExNotes(e.target.value)}
+                  placeholder="Ex: Controlar a descida durante 3 segundos..."
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-lime-400"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-slate-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-lime-400 hover:bg-lime-300 text-slate-950 text-xs font-bold rounded-xl transition-all"
+                >
+                  Guardar Exercício
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

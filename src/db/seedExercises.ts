@@ -60,7 +60,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     movementType: 'compound',
     difficulty: 'advanced',
     instructionsPt: 'Segura as barras paralelas, inclina o tronco ligeiramente para a frente (~30º) e flete os joelhos. Desce até os cotovelos formarem aproximadamente 90º e empurra de volta estendendo os braços.',
-    tips: ['Tronco inclinado = peito; tronco vertical = tríceps', 'Evita descer além do conforto articular do ombro'],
+    tips: ['Tronco inclinado = peito; tronco vertical = tricípites', 'Evita descer além do conforto articular do ombro'],
   },
 
   // --- COSTAS (BACK & LATS) ---
@@ -97,8 +97,8 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'bodyweight',
     movementType: 'compound',
     difficulty: 'advanced',
-    instructionsPt: 'Segura a barra fixa com pegada pronada (palmas para fora). A partir de uma suspensão total (dead hang), puxa o teu corpo para cima até o queixo passar da barra. Desce de forma controlada.',
-    tips: ['Evita o balanço (kipping) para foco em hipertrofia pura', 'Retrai e deprime as escápulas antes de puxar'],
+    instructionsPt: 'Segura a barra fixa com pega pronada (palmas para fora). A partir de uma suspensão total, puxa o teu corpo para cima até o queixo passar da barra. Desce de forma controlada.',
+    tips: ['Evita o balanço para foco em hipertrofia pura', 'Retrai e deprime as omoplatas antes de puxar'],
   },
   {
     id: 'seated-cable-row',
@@ -197,7 +197,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'barbell',
     movementType: 'isolation',
     difficulty: 'beginner',
-    instructionsPt: 'De pé, segura a barra à largura dos ombros com pegada supinada. Mantém os cotovelos fixos ao tronco e flete os antebraços subindo a barra em direção ao peito. Desce com amplitude completa.',
+    instructionsPt: 'De pé, segura a barra à largura dos ombros com pega supinada. Mantém os cotovelos fixos ao tronco e flete os antebraços subindo a barra em direção ao peito. Desce com amplitude completa.',
     tips: ['Não balances o tronco para dar balanço', 'Mantém os cotovelos fixos ao lado do corpo'],
   },
   {
@@ -274,7 +274,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     movementType: 'isolation',
     difficulty: 'beginner',
     instructionsPt: 'Apoia os antebraços sobre um banco plano ou sobre as coxas, com os pulsos projetados para além da borda e palmas viradas para cima. Enrola a barra apenas flexionando os punhos.',
-    tips: ['Movimento curto e controlado', 'Excelente para força de pegada'],
+    tips: ['Movimento curto e controlado', 'Excelente para força de pega'],
   },
 
   // --- ABDOMINAIS E CORE (ABS & CORE) ---
@@ -361,7 +361,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'dumbbell',
     movementType: 'compound',
     difficulty: 'intermediate',
-    instructionsPt: 'Apoia a ponta de um pé atrás num banco. Mantém o outro pé à frente. Desce a perna de trás em direção ao chão fletindo ambos os joelhos. Mantém o tronco ligeiramente inclinado para focar em glúteos ou mais vertical para quadríceps.',
+    instructionsPt: 'Apoia a ponta de um pé atrás num banco. Mantém o outro pé à frente. Desce a perna de trás em direção ao chão fletindo ambos os joelhos. Mantém o tronco ligeiramente inclinado para focar em glúteos ou mais vertical para quadricípites.',
     tips: ['Um dos melhores exercícios unilaterais para pernas e glúteos', 'Não empurres os joelhos para dentro'],
   },
 
@@ -490,7 +490,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     movementType: 'compound',
     difficulty: 'intermediate',
     instructionsPt: 'Dá um passo largo em frente, descendo a anca até ambos os joelhos formarem 90º. O joelho de trás aproxima-se do solo. Eleva-te impulsionando a perna da frente e dá o próximo passo.',
-    tips: ['Passadas mais longas recrutam mais glúteos; passadas mais curtas recrutam mais quadríceps'],
+    tips: ['Passadas mais longas recrutam mais glúteos; passadas mais curtas recrutam mais quadricípites'],
   },
   {
     id: 'ez-bar-preacher-curl',
@@ -501,7 +501,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     equipment: 'barbell',
     movementType: 'isolation',
     difficulty: 'beginner',
-    instructionsPt: 'Apoia os braços no banco inclinado do Scott. Segura a barra W e sobe até à contração máxima sem desencostar os tríceps do acolchoamento.',
+    instructionsPt: 'Apoia os braços no banco inclinado do Scott. Segura a barra W e sobe até à contração máxima sem desencostar os tricípites do acolchoamento.',
     tips: ['Elimina qualquer ajuda de balanço do tronco', 'Não hiperestendas os cotovelos no final da descida'],
   },
   {
@@ -514,7 +514,7 @@ export const INITIAL_EXERCISES: Exercise[] = [
     movementType: 'compound',
     difficulty: 'beginner',
     instructionsPt: 'Ajusta a altura do assento para que as pegas fiquem alinhadas ao meio do peitoral. Empurra as pegas para a frente até à extensão e retorna sob controlo.',
-    tips: ['Excelente para ir até à falha com total segurança sem precisar de spotter'],
+    tips: ['Excelente para ir até à falha com total segurança sem precisar de parceiro de treino'],
   },
   {
     id: 'lat-pullover-cable',

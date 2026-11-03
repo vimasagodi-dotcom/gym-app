@@ -3,6 +3,9 @@ import type { WorkoutSession } from '../../types/workout';
 import type { Exercise } from '../../types/exercise';
 import type { WorkoutRoutine } from '../../types/routine';
 import { DayWorkoutDetailModal } from './DayWorkoutDetailModal';
+import { db } from '../../db/db';
+import { useAuth } from '../../context/AuthContext';
+import { syncRoutineToCloud } from '../../services/cloudSync';
 import {
   Calendar as CalendarIcon,
   ChevronLeft,
@@ -147,7 +150,16 @@ export const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
   };
 
   // Cálculo da semana do bloco de 4 semanas
+  const { user } = useAuth();
   const currentWeek = activeRoutine?.currentWeek || 1;
+
+  const handleSelectWeek = async (wk: 1 | 2 | 3 | 4) => {
+    if (!activeRoutine) return;
+    await db.routines.update(activeRoutine.id, { currentWeek: wk });
+    if (user?.uid) {
+      syncRoutineToCloud(user.uid, { ...activeRoutine, currentWeek: wk }).catch(() => {});
+    }
+  };
 
   return (
     <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 sm:p-5 space-y-4 shadow-xl">
@@ -212,19 +224,24 @@ export const WorkoutCalendar: React.FC<WorkoutCalendarProps> = ({
           </span>
         </div>
 
-        {/* 4 Barras de Progresso das Semanas */}
-        <div className="grid grid-cols-4 gap-1.5 pt-0.5">
-          {[1, 2, 3, 4].map((wk) => (
-            <div
+        {/* 4 Botões Interativos de Progresso das Semanas */}
+        <div className="grid grid-cols-4 gap-1.5 pt-1">
+          {([1, 2, 3, 4] as const).map((wk) => (
+            <button
               key={wk}
-              className={`h-1.5 rounded-full transition-all ${
+              type="button"
+              onClick={() => handleSelectWeek(wk)}
+              title={`Mudar para a Semana ${wk} do Ciclo de 4 Semanas`}
+              className={`py-1.5 px-1 rounded-lg text-[10px] font-bold transition-all border ${
                 wk < currentWeek
-                  ? 'bg-emerald-400'
+                  ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-400'
                   : wk === currentWeek
-                  ? 'bg-lime-400 shadow-[0_0_8px_rgba(190,242,100,0.5)]'
-                  : 'bg-white/[0.1]'
+                  ? 'bg-lime-400 text-slate-950 border-lime-400 shadow-[0_0_10px_rgba(190,242,100,0.3)]'
+                  : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:text-slate-200'
               }`}
-            />
+            >
+              Semana {wk}
+            </button>
           ))}
         </div>
       </div>

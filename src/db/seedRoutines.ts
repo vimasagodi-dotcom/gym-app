@@ -1,11 +1,11 @@
 import type { WorkoutRoutine } from '../types/routine';
 
 export const INITIAL_ROUTINES: WorkoutRoutine[] = [
-  // 1. PUSH / PULL / LEGS (PPL)
+  // 1. EMPURRAR / PUXAR / PERNAS (PPL)
   {
     id: 'ppl-classic-routine',
     userId: 'default-user',
-    title: 'Push / Pull / Legs (PPL Clássico)',
+    title: 'Empurrar / Puxar / Pernas (PPL Clássico)',
     description: 'A divisão mais comprovada para ganhos de hipertrofia e força. Divide o corpo em movimentos de empurrar (peito, ombros, tricípites), puxar (costas, bicípites) e membros inferiores.',
     level: 'intermediate',
     daysPerWeek: 3,
@@ -16,8 +16,8 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     days: [
       {
         id: 'ppl-push-day',
-        name: 'Dia 1: Push (Peito, Ombros & Tricípites)',
-        description: 'Foco no peitoral, deltoides anterior/lateral e extensores de cotovelo.',
+        name: 'Dia 1: Empurrar (Peito, Ombros & Tricípites)',
+        description: 'Foco no peitoral, deltoides anterior/lateral e extensores do cotovelo.',
         order: 1,
         exercises: [
           {
@@ -75,8 +75,8 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ppl-pull-day',
-        name: 'Dia 2: Pull (Costas, Deltoide Posterior & Bicípites)',
-        description: 'Construção da largura do dorsal, densidade das costas e flexores de braço.',
+        name: 'Dia 2: Puxar (Costas, Deltoide Posterior & Bicípites)',
+        description: 'Construção da largura do dorsal, densidade das costas e flexores do braço.',
         order: 2,
         exercises: [
           {
@@ -133,7 +133,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ppl-legs-day',
-        name: 'Dia 3: Legs (Quadricípites, Isquiotibiais, Glúteos & Gémeos)',
+        name: 'Dia 3: Pernas (Quadricípites, Isquiotibiais, Glúteos & Gémeos)',
         description: 'Desenvolvimento equilibrado e completo da cadeia inferior.',
         order: 3,
         exercises: [
@@ -192,12 +192,12 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     ],
   },
 
-  // 2. UPPER / LOWER (4 DIAS)
+  // 2. SUPERIOR / INFERIOR (4 DIAS)
   {
     id: 'upper-lower-routine',
     userId: 'default-user',
-    title: 'Upper / Lower (Superior / Inferior 4x)',
-    description: 'Divisão moderna com frequência 2x por semana em cada grupo muscular. Ideal para combinar força com hipertrofia máxima.',
+    title: 'Superior / Inferior (4x por Semana)',
+    description: 'Divisão moderna com frequência de 2x por semana em cada grupo muscular. Ideal para combinar força com hipertrofia máxima.',
     level: 'intermediate',
     daysPerWeek: 4,
     category: 'upper_lower',
@@ -207,7 +207,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     days: [
       {
         id: 'ul-upper-1',
-        name: 'Upper A (Superior - Força & Volume)',
+        name: 'Superior A (Força & Volume)',
         order: 1,
         exercises: [
           { id: 'u1', exerciseId: 'barbell-bench-press', order: 1, targetSets: 4, targetRepsMin: 5, targetRepsMax: 8, restSeconds: 120 },
@@ -220,7 +220,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ul-lower-1',
-        name: 'Lower A (Inferior - Foco Quadricípites & Agachamento)',
+        name: 'Inferior A (Foco Quadricípites & Agachamento)',
         order: 2,
         exercises: [
           { id: 'l1', exerciseId: 'barbell-back-squat', order: 1, targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, restSeconds: 150 },
@@ -232,7 +232,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ul-upper-2',
-        name: 'Upper B (Superior - Hipertrofia & Isolamento)',
+        name: 'Superior B (Hipertrofia & Isolamento)',
         order: 3,
         exercises: [
           { id: 'u7', exerciseId: 'incline-dumbbell-press', order: 1, targetSets: 4, targetRepsMin: 8, targetRepsMax: 10, restSeconds: 90 },
@@ -245,7 +245,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'ul-lower-2',
-        name: 'Lower B (Inferior - Foco Cadeia Posterior & Glúteos)',
+        name: 'Inferior B (Foco Cadeia Posterior & Glúteos)',
         order: 4,
         exercises: [
           { id: 'l6', exerciseId: 'deadlift', order: 1, targetSets: 3, targetRepsMin: 5, targetRepsMax: 6, restSeconds: 180 },
@@ -262,7 +262,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
   {
     id: 'glute-posterior-focus-routine',
     userId: 'default-user',
-    title: 'Glute & Posterior Focus (Foco Glúteos & Pernas)',
+    title: 'Foco Glúteos & Pernas (Cadeia Posterior)',
     description: 'Plano com ênfase especial em hipertrofia de glúteos, isquiotibiais e costas, mantendo um equilíbrio elegante no tronco.',
     level: 'intermediate',
     daysPerWeek: 3,
@@ -284,7 +284,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'g-day-2',
-        name: 'Dia 2: Costas, Ombros & Core',
+        name: 'Dia 2: Costas, Ombros & Abdominais',
         order: 2,
         exercises: [
           { id: 'g5', exerciseId: 'lat-pulldown', order: 1, targetSets: 4, targetRepsMin: 10, targetRepsMax: 12, restSeconds: 90 },
@@ -308,12 +308,12 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
     ],
   },
 
-  // 4. ARNOLD SPLIT (PEITO/COSTAS, OMBROS/BRAÇOS, PERNAS)
+  // 4. DIVISÃO ARNOLD (PEITO/COSTAS, OMBROS/BRAÇOS, PERNAS)
   {
     id: 'arnold-split-routine',
     userId: 'default-user',
-    title: 'Arnold Split Clássico (Hipertrofia Avançada)',
-    description: 'A famosa divisão de Arnold Schwarzenegger: Peito e Costas no mesmo dia para superséries de pump colossal, seguido de Ombros e Braços, e Pernas completas.',
+    title: 'Divisão Arnold Clássica (Hipertrofia Avançada)',
+    description: 'A famosa divisão de Arnold Schwarzenegger: Peito e Costas no mesmo dia para superséries intensas, seguido de Ombros e Braços, e Pernas completas.',
     level: 'advanced',
     daysPerWeek: 3,
     category: 'custom',
@@ -335,7 +335,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'arnold-day-2',
-        name: 'Dia 2: Ombros & Braços (Bícep & Trícep Pump)',
+        name: 'Dia 2: Ombros, Bicípites & Tricípites',
         order: 2,
         exercises: [
           { id: 'ar6', exerciseId: 'overhead-barbell-press', order: 1, targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, restSeconds: 90 },
@@ -348,7 +348,7 @@ export const INITIAL_ROUTINES: WorkoutRoutine[] = [
       },
       {
         id: 'arnold-day-3',
-        name: 'Dia 3: Membros Inferiores & Core',
+        name: 'Dia 3: Membros Inferiores & Abdominais',
         order: 3,
         exercises: [
           { id: 'ar12', exerciseId: 'barbell-back-squat', order: 1, targetSets: 4, targetRepsMin: 6, targetRepsMax: 8, restSeconds: 150 },

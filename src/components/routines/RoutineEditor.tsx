@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { db } from '../../db/db';
 import type { WorkoutRoutine, RoutineDay, RoutineExercise } from '../../types/routine';
+import { EQUIPMENT_LABELS_PT } from '../../types/exercise';
+import { useAuth } from '../../context/AuthContext';
+import { syncRoutineToCloud } from '../../services/cloudSync';
 import { ExercisePickerModal } from '../workout/ExercisePickerModal';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Plus, Trash2, Save, X } from 'lucide-react';
@@ -16,6 +19,7 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
   onClose,
   onSave,
 }) => {
+  const { user } = useAuth();
   const [title, setTitle] = useState(initialRoutine?.title || 'O Meu Novo Plano');
   const [description, setDescription] = useState(initialRoutine?.description || 'Plano de hipertrofia personalizado');
   const [level, setLevel] = useState<'beginner' | 'intermediate' | 'advanced'>(initialRoutine?.level || 'intermediate');
@@ -106,11 +110,12 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
 
     const routineToSave: WorkoutRoutine = {
       id: initialRoutine ? initialRoutine.id : `routine-${Date.now()}`,
-      userId: 'default-user',
+      userId: user?.uid || initialRoutine?.userId || 'default-user',
       title,
       description,
       level,
       daysPerWeek: days.length,
+      currentWeek: initialRoutine?.currentWeek || 1,
       category: 'custom',
       days,
       createdAt: initialRoutine?.createdAt || new Date().toISOString(),
@@ -118,6 +123,9 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
     };
 
     await db.routines.put(routineToSave);
+    if (user?.uid) {
+      syncRoutineToCloud(user.uid, routineToSave).catch(() => {});
+    }
     onSave();
     onClose();
   };
@@ -240,7 +248,7 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
                     setDays(updated);
                   }}
                   className="bg-transparent border-b border-slate-700 px-1 py-1 text-sm font-bold text-slate-100 focus:outline-none focus:border-amber-400 flex-1"
-                  placeholder="Nome do Dia (ex: Push Peito/Tríceps)"
+                  placeholder="Nome do Dia (ex: Empurrar — Peito / Tricípites)"
                 />
                 {days.length > 1 && (
                   <button
@@ -267,7 +275,7 @@ export const RoutineEditor: React.FC<RoutineEditorProps> = ({
                           {exIdx + 1}. {meta?.namePt || meta?.name || 'Exercício'}
                         </span>
                         <span className="text-[11px] text-slate-500 block">
-                          {meta?.equipment}
+                          {meta?.equipment ? EQUIPMENT_LABELS_PT[meta.equipment] || meta.equipment : ''}
                         </span>
                       </div>
 

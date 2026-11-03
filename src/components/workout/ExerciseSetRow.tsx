@@ -25,9 +25,9 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
 
   const setTypeLabels: Record<SetType, { label: string; badge: string; color: string }> = {
     normal: { label: 'Normal', badge: `${setIndex + 1}`, color: 'bg-slate-800 text-slate-200 border border-slate-700/80' },
-    warmup: { label: 'Aquecimento', badge: 'W', color: 'bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40' },
-    drop: { label: 'Drop Set', badge: 'D', color: 'bg-indigo-500/20 text-indigo-400 font-bold border border-indigo-500/40' },
-    failure: { label: 'Falha', badge: 'F', color: 'bg-rose-500/20 text-rose-400 font-bold border border-rose-500/40' },
+    warmup: { label: 'Aquecimento', badge: 'A', color: 'bg-amber-500/20 text-amber-400 font-bold border border-amber-500/40' },
+    drop: { label: 'Série Drop', badge: 'D', color: 'bg-indigo-500/20 text-indigo-400 font-bold border border-indigo-500/40' },
+    failure: { label: 'Até à Falha', badge: 'F', color: 'bg-rose-500/20 text-rose-400 font-bold border border-rose-500/40' },
   };
 
   const currentTypeInfo = setTypeLabels[setLog.type] || setTypeLabels.normal;
@@ -76,18 +76,26 @@ export const ExerciseSetRow: React.FC<ExerciseSetRowProps> = ({
         </button>
       </div>
 
-      {/* 2. Histórico da Sessão Anterior */}
+      {/* 2. Histórico da Sessão Anterior (Clicável para copiar carga e reps) */}
       <div className="col-span-2 text-center">
         {previousSet ? (
-          <div className="flex flex-col items-center">
-            <span className="text-[9px] uppercase font-semibold text-slate-500 leading-none">Último</span>
-            <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-300 mt-0.5">
+          <button
+            type="button"
+            onClick={() => {
+              onUpdate('weightKg', previousSet.weightKg);
+              onUpdate('reps', previousSet.reps);
+            }}
+            title="Toca para copiar a carga e repetições da sessão anterior"
+            className="w-full py-1 px-1 rounded-lg hover:bg-white/[0.06] active:scale-95 transition-all flex flex-col items-center"
+          >
+            <span className="text-[9px] uppercase font-semibold text-amber-400/80 leading-none">Copiar</span>
+            <span className="text-[11px] sm:text-xs font-mono font-bold text-slate-200 mt-0.5">
               {formatWeight(previousSet.weightKg, unit)}
             </span>
             <span className="text-[9px] sm:text-[10px] font-mono text-slate-400">
               × {previousSet.reps}
             </span>
-          </div>
+          </button>
         ) : (
           <span className="text-xs text-slate-600 font-mono">-</span>
         )}

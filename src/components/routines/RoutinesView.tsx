@@ -3,12 +3,16 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import type { WorkoutRoutine } from '../../types/routine';
 import { useWorkout } from '../../context/WorkoutContext';
+import { useAuth } from '../../context/AuthContext';
+import { syncRoutineToCloud } from '../../services/cloudSync';
+import { DIFFICULTY_LABELS_PT } from '../../types/exercise';
 import { RoutineEditor } from './RoutineEditor';
 import { SmartPlanOnboardingModal } from '../onboarding/SmartPlanOnboardingModal';
 import { Plus, Play, Calendar, Edit3, Copy, Trash2, Layers, Sparkles } from 'lucide-react';
 
 export const RoutinesView: React.FC = () => {
   const { startRoutineWorkout, startQuickWorkout } = useWorkout();
+  const { user } = useAuth();
   const [editingRoutine, setEditingRoutine] = useState<WorkoutRoutine | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [isSmartModalOpen, setIsSmartModalOpen] = useState(false);
@@ -27,14 +31,25 @@ export const RoutinesView: React.FC = () => {
     const duplicated: WorkoutRoutine = {
       ...routine,
       id: `routine-${Date.now()}`,
-      title: `${routine.title} (Cópia)`,
+      title: `${routine.title} (O Meu Plano)`,
       isTemplate: false,
-      userId: 'default-user',
+      currentWeek: 1,
+      userId: user?.uid || 'default-user',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
     await db.routines.add(duplicated);
+    if (user?.uid) {
+      syncRoutineToCloud(user.uid, duplicated).catch(() => {});
+    }
     setActiveTab('my_routines');
+  };
+
+  const handleSetRoutineWeek = async (routine: WorkoutRoutine, wk: 1 | 2 | 3 | 4) => {
+    await db.routines.update(routine.id, { currentWeek: wk });
+    if (user?.uid) {
+      syncRoutineToCloud(user.uid, { ...routine, currentWeek: wk }).catch(() => {});
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -106,7 +121,7 @@ export const RoutinesView: React.FC = () => {
               : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          Templates Recomendados ({templateRoutines.length})
+          Modelos Recomendados ({templateRoutines.length})
         </button>
       </div>
 
@@ -119,24 +134,52 @@ export const RoutinesView: React.FC = () => {
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-lg font-bold text-slate-100">{routine.title}</h3>
                   {routine.isTemplate && (
                     <span className="px-2 py-0.5 bg-sky-500/15 border border-sky-500/30 text-sky-400 text-[10px] font-bold rounded-full">
-                      Template
+                      Modelo Base
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed max-w-xl">
                   {routine.description}
                 </p>
-                <div className="flex items-center gap-3 mt-2 text-[11px] text-slate-400 font-semibold">
+                <div className="flex flex-wrap items-center gap-3 mt-2 text-[11px] text-slate-400 font-semibold">
                   <span className="flex items-center gap-1">
                     <Calendar size={13} className="text-amber-400" /> {routine.days.length} dias de treino
                   </span>
                   <span>•</span>
-                  <span className="capitalize text-slate-500">Nível {routine.level}</span>
+                  <span className="text-slate-400">
+                    Nível {DIFFICULTY_LABELS_PT[routine.level] || routine.level}
+                  </span>
                 </div>
+
+                {/* Seletor de Semana de Periodização (Bloco de 4 Semanas) */}
+                {!routine.isTemplate && (
+                  <div className="flex items-center gap-1.5 mt-3 flex-wrap">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">
+                      Ciclo de 4 Semanas:
+                    </span>
+                    {([1, 2, 3, 4] as const).map((wk) => {
+                      const activeWk = routine.currentWeek || 1;
+                      return (
+                        <button
+                          key={wk}
+                          type="button"
+                          onClick={() => handleSetRoutineWeek(routine, wk)}
+                          className={`px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all border ${
+                            activeWk === wk
+                              ? 'bg-amber-500 text-slate-950 border-amber-500'
+                              : 'bg-slate-950/70 border-slate-800 text-slate-400 hover:text-slate-200'
+                          }`}
+                        >
+                          Semana {wk}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center gap-1">
@@ -216,7 +259,7 @@ export const RoutinesView: React.FC = () => {
               Ainda não criaste planos personalizados.
             </p>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-              Podes criar um plano do zero ou duplicar um dos nossos templates comprovados na aba ao lado!
+              Podes criar um plano do zero ou duplicar um dos nossos modelos comprovados no separador ao lado!
             </p>
           </div>
         )}

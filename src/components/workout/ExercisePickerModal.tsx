@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import type { MuscleGroup, EquipmentType } from '../../types/exercise';
-import { MUSCLE_GROUPS_INFO } from '../../types/exercise';
+import { MUSCLE_GROUPS_INFO, EQUIPMENT_LABELS_PT } from '../../types/exercise';
 import { Search, X, Plus, Dumbbell } from 'lucide-react';
 
 interface ExercisePickerModalProps {
@@ -132,13 +132,13 @@ export const ExercisePickerModal: React.FC<ExercisePickerModalProps> = ({
                 key={eq}
                 type="button"
                 onClick={() => setSelectedEquipment(eq)}
-                className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize whitespace-nowrap transition-all ${
+                className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold whitespace-nowrap transition-all ${
                   selectedEquipment === eq
                     ? 'bg-slate-300 text-slate-900 font-bold'
                     : 'bg-slate-800/80 text-slate-400 hover:bg-slate-700'
                 }`}
               >
-                {eq}
+                {EQUIPMENT_LABELS_PT[eq] || eq}
               </button>
             ))}
           </div>
@@ -173,9 +173,9 @@ export const ExercisePickerModal: React.FC<ExercisePickerModalProps> = ({
                     <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-400">
                       <span className="text-amber-400/90 font-medium">{primaryNames}</span>
                       <span>•</span>
-                      <span className="capitalize text-slate-500">{exercise.equipment}</span>
+                      <span className="text-slate-500">{EQUIPMENT_LABELS_PT[exercise.equipment] || exercise.equipment}</span>
                       <span>•</span>
-                      <span className="capitalize text-slate-500">{exercise.movementType === 'compound' ? 'Composto' : 'Isolado'}</span>
+                      <span className="text-slate-500">{exercise.movementType === 'compound' ? 'Composto' : 'Isolado'}</span>
                     </div>
                   </div>
 

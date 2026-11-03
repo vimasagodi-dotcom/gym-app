@@ -9,6 +9,7 @@ import { ExercisePickerModal } from './ExercisePickerModal';
 import { WorkoutSummaryModal } from './WorkoutSummaryModal';
 import { ExerciseVideoModal } from '../exercises/ExerciseVideoModal';
 import { formatDuration } from '../../utils/formulas';
+import { EQUIPMENT_LABELS_PT } from '../../types/exercise';
 import type { WorkoutSession } from '../../types/workout';
 import {
   Clock,
@@ -19,6 +20,7 @@ import {
   ArrowRight,
   Info,
   Play,
+  TrendingUp,
 } from 'lucide-react';
 
 export const ActiveWorkoutView: React.FC = () => {
@@ -169,10 +171,10 @@ export const ActiveWorkoutView: React.FC = () => {
               <p className="text-xs text-slate-400 mt-1">{currentExerciseMeta.name}</p>
 
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-3">
-                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 capitalize border border-slate-700/60">
-                  {currentExerciseMeta.equipment}
+                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 border border-slate-700/60">
+                  {EQUIPMENT_LABELS_PT[currentExerciseMeta.equipment] || currentExerciseMeta.equipment}
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 capitalize border border-slate-700/60">
+                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 border border-slate-700/60">
                   {currentExerciseMeta.movementType === 'compound' ? 'Composto' : 'Isolado'}
                 </span>
                 <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-[11px] font-bold text-amber-400 border border-amber-500/20">
@@ -193,6 +195,31 @@ export const ActiveWorkoutView: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* Guia Inteligente de Sobrecarga Progressiva / Periodização */}
+          {(activeSession.periodizationWeek || previousLog) && (
+            <div className="bg-amber-500/10 border border-amber-500/25 rounded-2xl px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                  <TrendingUp size={16} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-amber-300">
+                    {activeSession.periodizationWeek === 1 && 'Semana 1/4 — Base e Volume (4×10, RPE 8)'}
+                    {activeSession.periodizationWeek === 2 && 'Semana 2/4 — Intensificação (-2 reps, +Carga, RPE 8.5)'}
+                    {activeSession.periodizationWeek === 3 && 'Semana 3/4 — Sobrecarga Máxima (-4 reps, Recorde, RPE 9)'}
+                    {activeSession.periodizationWeek === 4 && 'Semana 4/4 — Deload de Recuperação (65% da carga, RPE 6.5)'}
+                    {!activeSession.periodizationWeek && 'Meta de Sobrecarga Progressiva'}
+                  </p>
+                  <p className="text-[11px] text-slate-300 mt-0.5">
+                    {previousLog?.sets?.[0]
+                      ? `Último treino: ${previousLog.sets[0].weightKg} kg × ${previousLog.sets[0].reps} repetições. Clica na coluna "Anterior" para copiar.`
+                      : 'Primeiro registo deste exercício — define a tua carga base de referência.'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Instruções retráteis */}
           {showInstructions && currentExerciseMeta.instructionsPt && (
@@ -218,7 +245,7 @@ export const ActiveWorkoutView: React.FC = () => {
               <div className="col-span-3 text-center">Carga</div>
               <div className="col-span-2 text-center">Reps</div>
               <div className="col-span-1 text-center">RPE</div>
-              <div className="col-span-2 text-center">Check</div>
+              <div className="col-span-2 text-center">Feito</div>
             </div>
 
             {/* Linhas de Série */}

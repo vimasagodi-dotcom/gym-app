@@ -12,6 +12,7 @@ import {
   HardDrive,
   KeyRound,
   Loader2,
+  RefreshCw,
 } from 'lucide-react';
 
 interface AuthModalProps {
@@ -22,7 +23,7 @@ interface AuthModalProps {
 type AuthTab = 'login' | 'register' | 'forgot_password';
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { user, login, register, logout, resetPassword, isFirebaseActive } = useAuth();
+  const { user, login, register, logout, resetPassword, isFirebaseActive, isSyncing, syncNow } = useAuth();
 
   const [activeTab, setActiveTab] = useState<AuthTab>('login');
   const [email, setEmail] = useState('');
@@ -131,6 +132,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   <span>Sessão ativa e sincronizada com o calendário</span>
                 </div>
               </div>
+
+              <button
+                type="button"
+                disabled={isSyncing}
+                onClick={syncNow}
+                className="w-full py-2.5 bg-lime-400/15 hover:bg-lime-400/25 border border-lime-400/30 text-lime-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+              >
+                <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
+                <span>{isSyncing ? 'A sincronizar dados na nuvem...' : 'Sincronizar Calendário & Treinos Agora'}</span>
+              </button>
 
               <button
                 type="button"

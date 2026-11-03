@@ -2,6 +2,9 @@ import React from 'react';
 import type { WorkoutSession } from '../../types/workout';
 import type { Exercise } from '../../types/exercise';
 import { useUser } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { db } from '../../db/db';
+import { deleteWorkoutFromCloud } from '../../services/cloudSync';
 import { formatDuration, formatWeight } from '../../utils/formulas';
 import {
   X,
@@ -13,6 +16,7 @@ import {
   CheckCircle2,
   Play,
   Layers,
+  Trash2,
 } from 'lucide-react';
 
 interface DayWorkoutDetailModalProps {
@@ -33,10 +37,21 @@ export const DayWorkoutDetailModal: React.FC<DayWorkoutDetailModalProps> = ({
   onStartRoutine,
 }) => {
   const { unit } = useUser();
+  const { user } = useAuth();
 
   if (!isOpen || !date) return null;
 
   const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
+
+  const handleDeleteSession = async (sessionId: string) => {
+    await db.workoutSessions.delete(sessionId);
+    if (user?.uid) {
+      deleteWorkoutFromCloud(user.uid, sessionId).catch(() => {});
+    }
+    if (sessions.length <= 1) {
+      onClose();
+    }
+  };
 
   // Formatação da data em Português de Portugal
   const dateFormatted = date.toLocaleDateString('pt-PT', {
@@ -120,19 +135,29 @@ export const DayWorkoutDetailModal: React.FC<DayWorkoutDetailModalProps> = ({
                       <h3 className="text-base font-bold text-slate-100 mt-1">{session.name}</h3>
                     </div>
 
-                    {session.routineId && onStartRoutine && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {session.routineId && onStartRoutine && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onClose();
+                            onStartRoutine(session.routineId!);
+                          }}
+                          className="px-3 py-1 bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all"
+                        >
+                          <Play size={12} className="fill-current" />
+                          <span>Treinar Novamente</span>
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => {
-                          onClose();
-                          onStartRoutine(session.routineId!);
-                        }}
-                        className="px-3 py-1 bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-all shrink-0"
+                        onClick={() => handleDeleteSession(session.id)}
+                        className="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                        title="Eliminar este registo de treino"
                       >
-                        <Play size={12} className="fill-current" />
-                        <span>Treinar Novamente</span>
+                        <Trash2 size={14} />
                       </button>
-                    )}
+                    </div>
                   </div>
 
                   {/* Estatísticas Rápidas do Treino */}

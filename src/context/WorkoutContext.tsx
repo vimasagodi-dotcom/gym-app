@@ -5,6 +5,8 @@ import type { WorkoutRoutine, RoutineDay } from '../types/routine';
 import { calculate1RM } from '../utils/formulas';
 import { playRestCompleteSound, playCheckSound } from '../utils/sound';
 import { requestScreenWakeLock, releaseScreenWakeLock } from '../utils/wakeLock';
+import { useAuth } from './AuthContext';
+import { syncWorkoutToCloud, syncRoutineToCloud, syncPrToCloud } from '../services/cloudSync';
 
 interface WorkoutContextType {
   activeSession: WorkoutSession | null;
@@ -42,6 +44,7 @@ const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 const ACTIVE_WORKOUT_STORAGE_KEY = 'gymapp_active_workout_state';
 
 export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [activeSession, setActiveSession] = useState<WorkoutSession | null>(() => {
     try {
       const saved = localStorage.getItem(ACTIVE_WORKOUT_STORAGE_KEY);
@@ -166,9 +169,29 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
     setRestTimerSeconds((prev) => Math.max(0, prev + deltaSeconds));
   }, []);
 
-  // Iniciar treino a partir de uma rotina com Periodização Automática de 4 Semanas
+  // Iniciar treino a partir de uma rotina com Periodização Automática de 4 Semanas e Sobrecarga Progressiva
   const startRoutineWorkout = async (routine: WorkoutRoutine, day: RoutineDay) => {
     const week = (routine.currentWeek || 1) as 1 | 2 | 3 | 4;
+
+    // Busca últimos registos para sugerir a carga progressiva automaticamente
+    const pastSessions = await db.workoutSessions
+      .orderBy('startedAt')
+      .reverse()
+      .filter((s) => s.completedAt !== undefined)
+      .limit(25)
+      .toArray();
+
+    const lastLogsMap: Record<string, WorkoutExerciseLog> = {};
+    for (const item of day.exercises) {
+      for (const session of pastSessions) {
+        const found = session.exercises.find((e) => e.exerciseId === item.exerciseId);
+        if (found && found.sets.some((s) => s.isCompleted)) {
+          lastLogsMap[item.exerciseId] = found;
+          break;
+        }
+      }
+    }
+    setPreviousExerciseLogs(lastLogsMap);
 
     const exerciseLogs: WorkoutExerciseLog[] = day.exercises.map((item, idx) => {
       // Cálculo dinâmico de reps e RPE com base na semana do bloco de 4 semanas
@@ -189,15 +212,29 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
         targetRpe = 6.5;
       }
 
+      const prevLog = lastLogsMap[item.exerciseId];
       const defaultSets: ExerciseSetLog[] = [];
       const numSets = week === 4 ? Math.max(2, (item.targetSets || 3) - 1) : item.targetSets || 3;
 
       for (let i = 1; i <= numSets; i++) {
+        const prevSet = prevLog?.sets?.[i - 1] || prevLog?.sets?.[0];
+        let suggestedWeight = prevSet?.weightKg || 0;
+
+        if (suggestedWeight > 0) {
+          if (week === 2) {
+            suggestedWeight = Math.round((suggestedWeight + (suggestedWeight >= 20 ? 2.5 : 1)) * 2) / 2;
+          } else if (week === 3) {
+            suggestedWeight = Math.round((suggestedWeight + (suggestedWeight >= 20 ? 5 : 2)) * 2) / 2;
+          } else if (week === 4) {
+            suggestedWeight = Math.round(suggestedWeight * 0.65 * 2) / 2;
+          }
+        }
+
         defaultSets.push({
           id: `set-${Date.now()}-${idx}-${i}`,
           setNumber: i,
           type: 'normal',
-          weightKg: 0,
+          weightKg: suggestedWeight,
           reps: targetReps,
           rpe: targetRpe,
           isCompleted: false,
@@ -216,7 +253,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const newSession: WorkoutSession = {
       id: `workout-${Date.now()}`,
-      userId: routine.userId || 'default-user',
+      userId: user?.uid || routine.userId || 'default-user',
       routineId: routine.id,
       routineDayId: day.id,
       name: `${routine.title} - ${day.name}`,
@@ -232,7 +269,6 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     setActiveSession(newSession);
     setActiveExerciseIndex(0);
-    await loadPreviousHistory(exerciseLogs.map((e) => e.exerciseId));
   };
 
   // Iniciar treino rápido livre
@@ -473,6 +509,9 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
           if (dayIndex >= 0 && dayIndex === routine.days.length - 1) {
             const nextWeek = currentWeek >= 4 ? 1 : ((currentWeek + 1) as 1 | 2 | 3 | 4);
             await db.routines.update(routine.id, { currentWeek: nextWeek });
+            if (user?.uid) {
+              syncRoutineToCloud(user.uid, { ...routine, currentWeek: nextWeek }).catch(() => {});
+            }
           }
         }
       } catch (err) {
@@ -482,6 +521,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     const finalSession: WorkoutSession = {
       ...activeSession,
+      userId: user?.uid || activeSession.userId || 'default-user',
       completedAt: new Date().toISOString(),
       totalVolumeKg: Math.round(totalVolume),
       totalSetsCompleted: completedSetsCount,
@@ -492,6 +532,14 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
 
     // Guarda na base de dados IndexedDB
     await db.workoutSessions.add(finalSession);
+
+    // Sincroniza na Cloud Firebase se o utilizador tiver sessão iniciada
+    if (user?.uid) {
+      syncWorkoutToCloud(user.uid, finalSession).catch(() => {});
+      for (const pr of prsDetected) {
+        syncPrToCloud(user.uid, pr).catch(() => {});
+      }
+    }
 
     // Limpa estado ativo
     setActiveSession(null);

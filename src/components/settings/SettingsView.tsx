@@ -22,7 +22,7 @@ import {
 
 export const SettingsView: React.FC = () => {
   const { profile, updateProfile, setUnitSystem, setSilhouette, toggleTheme } = useUser();
-  const { user, logout, isFirebaseActive } = useAuth();
+  const { user, logout, isFirebaseActive, isSyncing, syncNow } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [nameInput, setNameInput] = useState(profile.name);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -55,10 +55,10 @@ export const SettingsView: React.FC = () => {
       const content = event.target?.result as string;
       const success = await importDatabaseFromJson(content);
       if (success) {
-        setImportStatus('Backup restaurado com sucesso! A recarregar...');
+        setImportStatus('Cópia de segurança restaurada com sucesso! A recarregar...');
         setTimeout(() => window.location.reload(), 1500);
       } else {
-        setImportStatus('Erro ao importar backup. Ficheiro inválido.');
+        setImportStatus('Erro ao importar cópia de segurança. Ficheiro inválido.');
       }
     };
     reader.readAsText(file);
@@ -124,22 +124,34 @@ export const SettingsView: React.FC = () => {
         </div>
 
         {user ? (
-          <div className="bg-[#18181c] p-3 rounded-2xl flex items-center justify-between">
+          <div className="bg-[#18181c] p-3 rounded-2xl flex items-center justify-between gap-2">
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-200 truncate">{user.displayName}</p>
               <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
             </div>
-            <button
-              type="button"
-              onClick={logout}
-              className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 py-1 px-2 rounded-lg"
-            >
-              <LogOut size={13} /> Sair
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              {isFirebaseActive && (
+                <button
+                  type="button"
+                  onClick={() => syncNow()}
+                  disabled={isSyncing}
+                  className="text-xs text-lime-400 hover:text-lime-300 bg-lime-400/10 border border-lime-400/25 py-1 px-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
+                >
+                  {isSyncing ? 'A sincronizar...' : 'Sincronizar Agora'}
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={logout}
+                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 py-1 px-2 rounded-lg"
+              >
+                <LogOut size={13} /> Terminar Sessão
+              </button>
+            </div>
           </div>
         ) : (
           <p className="text-xs text-slate-400 leading-relaxed">
-            Inicia sessão para sincronizar os teus treinos no calendário e recuperar o acesso em caso de perda de dispositivo.
+            Inicia sessão para sincronizar os teus treinos no calendário e recuperar o acesso caso troques de telemóvel.
           </p>
         )}
       </div>
@@ -301,7 +313,7 @@ export const SettingsView: React.FC = () => {
           Cópia de Segurança & Dados Locais
         </h2>
         <p className="text-xs text-slate-400">
-          Os teus dados estão guardados no IndexedDB do teu dispositivo. Podes exportar um ficheiro de backup para guardar ou transferir para outro dispositivo.
+          Os teus dados estão guardados no teu telemóvel ou computador (IndexedDB) e na nuvem Firebase quando inicias sessão. Também podes exportar um ficheiro de cópia de segurança manual:
         </p>
 
         {importStatus && (
@@ -316,7 +328,7 @@ export const SettingsView: React.FC = () => {
             onClick={handleExport}
             className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all"
           >
-            <Download size={16} className="text-amber-400" /> Exportar Backup (JSON)
+            <Download size={16} className="text-amber-400" /> Exportar Cópia (JSON)
           </button>
 
           <button
@@ -324,7 +336,7 @@ export const SettingsView: React.FC = () => {
             onClick={() => fileInputRef.current?.click()}
             className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all"
           >
-            <Upload size={16} className="text-sky-400" /> Restaurar Backup
+            <Upload size={16} className="text-sky-400" /> Restaurar Cópia
           </button>
           <input
             type="file"
