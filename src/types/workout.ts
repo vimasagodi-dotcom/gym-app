@@ -50,6 +50,7 @@ export interface WorkoutSession {
   rating?: number; // 1-5 estrelas de sensação
   exercises: WorkoutExerciseLog[];
   prsAchieved?: PersonalRecord[];
+  periodizationWeek?: 1 | 2 | 3 | 4;
 }
 
 export interface ActiveWorkoutState {

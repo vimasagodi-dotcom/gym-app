@@ -166,18 +166,40 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
     setRestTimerSeconds((prev) => Math.max(0, prev + deltaSeconds));
   }, []);
 
-  // Iniciar treino a partir de uma rotina
+  // Iniciar treino a partir de uma rotina com Periodização Automática de 4 Semanas
   const startRoutineWorkout = async (routine: WorkoutRoutine, day: RoutineDay) => {
+    const week = (routine.currentWeek || 1) as 1 | 2 | 3 | 4;
+
     const exerciseLogs: WorkoutExerciseLog[] = day.exercises.map((item, idx) => {
+      // Cálculo dinâmico de reps e RPE com base na semana do bloco de 4 semanas
+      let targetReps = item.targetRepsMin || 10;
+      let targetRpe = item.targetRpe || 8;
+
+      if (week === 2) {
+        // Semana 2: Intensificação (-2 reps, +carga)
+        targetReps = Math.max(8, targetReps - 2);
+        targetRpe = 8.5;
+      } else if (week === 3) {
+        // Semana 3: Sobrecarga Máxima / Pico de Força (-4 reps, carga máxima)
+        targetReps = Math.max(6, targetReps - 4);
+        targetRpe = 9;
+      } else if (week === 4) {
+        // Semana 4: Deload & Recuperação Articular
+        targetReps = 8;
+        targetRpe = 6.5;
+      }
+
       const defaultSets: ExerciseSetLog[] = [];
-      for (let i = 1; i <= (item.targetSets || 3); i++) {
+      const numSets = week === 4 ? Math.max(2, (item.targetSets || 3) - 1) : item.targetSets || 3;
+
+      for (let i = 1; i <= numSets; i++) {
         defaultSets.push({
           id: `set-${Date.now()}-${idx}-${i}`,
           setNumber: i,
           type: 'normal',
           weightKg: 0,
-          reps: item.targetRepsMin || 10,
-          rpe: item.targetRpe || 8,
+          reps: targetReps,
+          rpe: targetRpe,
           isCompleted: false,
         });
       }
@@ -203,6 +225,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
       totalVolumeKg: 0,
       totalSetsCompleted: 0,
       totalRepsCompleted: 0,
+      periodizationWeek: week,
       exercises: exerciseLogs,
       prsAchieved: [],
     };
@@ -438,6 +461,25 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
       }
     }
 
+    // Gestão do Avanço da Semana no Bloco de Periodização de 4 Semanas
+    let currentWeek: 1 | 2 | 3 | 4 = (activeSession.periodizationWeek || 1) as 1 | 2 | 3 | 4;
+    if (activeSession.routineId) {
+      try {
+        const routine = await db.routines.get(activeSession.routineId);
+        if (routine && routine.days.length > 0) {
+          currentWeek = (routine.currentWeek || 1) as 1 | 2 | 3 | 4;
+          const dayIndex = routine.days.findIndex((d) => d.id === activeSession.routineDayId);
+          // Se for o último dia da rotina nessa semana, avança a semana do bloco
+          if (dayIndex >= 0 && dayIndex === routine.days.length - 1) {
+            const nextWeek = currentWeek >= 4 ? 1 : ((currentWeek + 1) as 1 | 2 | 3 | 4);
+            await db.routines.update(routine.id, { currentWeek: nextWeek });
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao atualizar semana da rotina:', err);
+      }
+    }
+
     const finalSession: WorkoutSession = {
       ...activeSession,
       completedAt: new Date().toISOString(),
@@ -445,6 +487,7 @@ export const WorkoutProvider: React.FC<{ children: ReactNode }> = ({ children })
       totalSetsCompleted: completedSetsCount,
       totalRepsCompleted: completedRepsCount,
       prsAchieved: prsDetected,
+      periodizationWeek: currentWeek,
     };
 
     // Guarda na base de dados IndexedDB

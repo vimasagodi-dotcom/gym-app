@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializeDatabase } from './db/initializeDb';
+import { AuthProvider } from './context/AuthContext';
 import { UserProvider } from './context/ThemeContext';
 import { WorkoutProvider, useWorkout } from './context/WorkoutContext';
 import { DashboardView } from './components/dashboard/DashboardView';
@@ -85,11 +86,13 @@ export function App() {
   }
 
   return (
-    <UserProvider>
-      <WorkoutProvider>
-        <MainAppContent />
-      </WorkoutProvider>
-    </UserProvider>
+    <AuthProvider>
+      <UserProvider>
+        <WorkoutProvider>
+          <MainAppContent />
+        </WorkoutProvider>
+      </UserProvider>
+    </AuthProvider>
   );
 }
 

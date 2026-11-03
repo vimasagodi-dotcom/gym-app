@@ -29,6 +29,8 @@ export interface WorkoutRoutine {
   isTemplate?: boolean;
   category?: 'ppl' | 'upper_lower' | 'full_body' | 'bro_split' | 'custom';
   days: RoutineDay[];
+  currentWeek?: 1 | 2 | 3 | 4;
+  targetWeeks?: number; // padrão: 4
   createdAt: string;
   updatedAt: string;
 }

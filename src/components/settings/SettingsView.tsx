@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useUser } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { AuthModal } from '../auth/AuthModal';
 import type { AvatarSilhouette, FitnessGoal } from '../../types/user';
 import { exportDatabaseToJson, importDatabaseFromJson } from '../../utils/exportImport';
 import {
@@ -12,10 +14,16 @@ import {
   Upload,
   Check,
   Shield,
+  KeyRound,
+  Cloud,
+  HardDrive,
+  LogOut,
 } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { profile, updateProfile, setUnitSystem, setSilhouette, toggleTheme } = useUser();
+  const { user, logout, isFirebaseActive } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [nameInput, setNameInput] = useState(profile.name);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -79,6 +87,61 @@ export const SettingsView: React.FC = () => {
         <p className="text-xs text-slate-400 mt-0.5">
           Personaliza a app para o teu estilo de treino no ginásio
         </p>
+      </div>
+
+      {/* 0. Conta & Sincronização */}
+      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-5 shadow-lg space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="w-8 h-8 rounded-xl bg-lime-400/15 text-lime-400 flex items-center justify-center">
+              <KeyRound size={16} />
+            </span>
+            <div>
+              <h2 className="text-sm font-bold text-slate-100">Conta & Sincronização</h2>
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+                {isFirebaseActive ? (
+                  <>
+                    <Cloud size={11} className="text-emerald-400" />
+                    <span>Nuvem Firebase Conectada</span>
+                  </>
+                ) : (
+                  <>
+                    <HardDrive size={11} className="text-lime-400" />
+                    <span>Armazenamento Local Ativo</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsAuthModalOpen(true)}
+            className="px-3.5 py-1.5 bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold text-xs rounded-xl transition-all"
+          >
+            {user ? 'Gerir Conta' : 'Iniciar Sessão'}
+          </button>
+        </div>
+
+        {user ? (
+          <div className="bg-[#18181c] p-3 rounded-2xl flex items-center justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-bold text-slate-200 truncate">{user.displayName}</p>
+              <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 py-1 px-2 rounded-lg"
+            >
+              <LogOut size={13} /> Sair
+            </button>
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Inicia sessão para sincronizar os teus treinos no calendário e recuperar o acesso em caso de perda de dispositivo.
+          </p>
+        )}
       </div>
 
       {/* 1. Perfil do Atleta */}
@@ -272,6 +335,11 @@ export const SettingsView: React.FC = () => {
           />
         </div>
       </div>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 };

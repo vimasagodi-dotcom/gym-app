@@ -1,17 +1,23 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import { useWorkout } from '../../context/WorkoutContext';
 import { useUser } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
 import { formatWeight } from '../../utils/formulas';
 import { WeeklyMuscleMap } from '../analytics/WeeklyMuscleMap';
 import { SmartPlanOnboardingModal } from '../onboarding/SmartPlanOnboardingModal';
+import { WorkoutCalendar } from './WorkoutCalendar';
+import { AuthModal } from '../auth/AuthModal';
 import {
   Flame,
   Play,
   Award,
   ArrowRight,
   Sparkles,
+  User as UserIcon,
+  Cloud,
+  HardDrive,
 } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -21,7 +27,10 @@ interface DashboardViewProps {
 export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab }) => {
   const { startRoutineWorkout, startQuickWorkout } = useWorkout();
   const { unit, profile } = useUser();
-  const [isOnboardingOpen, setIsOnboardingOpen] = React.useState(false);
+  const { user, isFirebaseActive } = useAuth();
+
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const sessions = useLiveQuery(() => db.workoutSessions.orderBy('startedAt').reverse().toArray()) || [];
   const routines = useLiveQuery(() => db.routines.toArray()) || [];
@@ -62,7 +71,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
         ? Math.round(((thisWeekVolume - prevWeekVolume) / prevWeekVolume) * 100)
         : 0;
 
-    // Cálculo simplificado de Streak de dias/semanas
+    // Cálculo de Streak de dias/semanas
     const streak = completedSessions.length > 0 ? Math.min(completedSessions.length, 12) : 0;
 
     return {
@@ -75,9 +84,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
   }, [completedSessions]);
 
   // Encontra o próximo treino planeado da rotina ativa do utilizador
-  const nextWorkout = useMemo(() => {
+  const activeRoutine = useMemo(() => {
     if (routines.length === 0) return null;
-    const activeRoutine = routines.find((r) => !r.isTemplate) || routines[0];
+    return routines.find((r) => !r.isTemplate) || routines[0];
+  }, [routines]);
+
+  const nextWorkout = useMemo(() => {
     if (!activeRoutine || activeRoutine.days.length === 0) return null;
 
     // Determina qual o próximo dia com base na última sessão
@@ -95,37 +107,67 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
       routine: activeRoutine,
       day: nextDay,
     };
-  }, [routines, completedSessions]);
+  }, [activeRoutine, completedSessions]);
 
   const exerciseMap = useMemo(() => new Map(exercises.map((e) => [e.id, e])), [exercises]);
 
+  const handleStartRoutineFromId = (routineId: string) => {
+    const routine = routines.find((r) => r.id === routineId);
+    if (routine && routine.days.length > 0) {
+      startRoutineWorkout(routine, routine.days[0]);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-3.5 sm:px-4 py-3 sm:py-4 pb-28 space-y-5 animate-fade-in">
-      {/* 1. Header de Boas-Vindas Clean */}
+      {/* 1. Header de Boas-Vindas & Gestão de Conta */}
       <div className="flex items-center justify-between gap-2 pt-1">
         <div className="min-w-0">
-          <span className="text-[11px] font-semibold text-slate-400 tracking-wide uppercase truncate block">
-            Visão Geral • {profile.name}
-          </span>
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 tracking-wide uppercase truncate">
+            <span>Visão Geral</span>
+            <span>•</span>
+            <span className="text-lime-400 font-bold truncate">
+              {user ? user.displayName : profile.name}
+            </span>
+            {isFirebaseActive ? (
+              <span className="px-1.5 py-0.2 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[9px] font-bold flex items-center gap-0.5 ml-1">
+                <Cloud size={9} /> Nuvem
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.2 bg-lime-400/10 text-lime-400 border border-lime-400/20 rounded text-[9px] font-bold flex items-center gap-0.5 ml-1">
+                <HardDrive size={9} /> Local
+              </span>
+            )}
+          </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-100 tracking-tight mt-0.5 truncate">
             Pronto para treinar?
           </h1>
         </div>
 
-        {/* Streak Badge & Botão Inteligente */}
+        {/* Streak Badge & Botão de Perfil / Login */}
         <div className="flex items-center gap-1.5 shrink-0">
           <button
             type="button"
-            onClick={() => setIsOnboardingOpen(true)}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/80 rounded-xl text-xs font-medium text-slate-200 transition-all active:scale-95"
-            title="Gerar plano personalizado com base nas tuas métricas"
+            onClick={() => setIsAuthModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#18181c] hover:bg-[#202026] border border-white/[0.08] hover:border-lime-400/40 rounded-xl text-xs font-semibold text-slate-200 transition-all active:scale-95"
+            title={user ? 'Gerir conta e sincronização' : 'Iniciar sessão ou criar conta'}
           >
-            <Sparkles size={14} className="text-amber-400 shrink-0" />
+            <UserIcon size={14} className={user ? 'text-lime-400' : 'text-slate-400'} />
+            <span className="hidden sm:inline">{user ? 'Conta' : 'Entrar'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsOnboardingOpen(true)}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-[#18181c] hover:bg-[#202026] border border-white/[0.08] rounded-xl text-xs font-medium text-slate-200 transition-all active:scale-95"
+            title="Gerar plano de 4 semanas personalizado"
+          >
+            <Sparkles size={14} className="text-lime-400 shrink-0" />
             <span className="hidden sm:inline">Plano Auto</span>
           </button>
 
-          <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-slate-900 border border-slate-800 rounded-xl">
-            <Flame size={15} className="text-amber-400 fill-amber-400 shrink-0" />
+          <div className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 bg-[#111114] border border-white/[0.08] rounded-xl">
+            <Flame size={15} className="text-lime-400 fill-lime-400 shrink-0" />
             <span className="text-xs font-semibold text-slate-200 font-mono">
               {stats.streak}d
             </span>
@@ -133,35 +175,21 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
         </div>
       </div>
 
-      {/* Banner de Boas-vindas para calibração inicial se ainda não completou */}
-      {!profile.hasCompletedOnboarding && (
-        <div className="bg-[#121215] border border-white/[0.08] rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400 uppercase tracking-wide">
-              <Sparkles size={14} /> Calibração Inicial do Atleta
-            </div>
-            <p className="text-xs text-slate-400 mt-1 max-w-md leading-relaxed">
-              Define os teus objetivos e características para obteres um plano Full-Body, Upper/Lower ou PPL à medida.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsOnboardingOpen(true)}
-            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl transition-all active:scale-95 shrink-0"
-          >
-            Configurar
-          </button>
-        </div>
-      )}
-
-      {/* 2. Próximo Treino em Destaque */}
+      {/* 2. Próximo Treino em Destaque com Bloco de Periodização */}
       {nextWorkout ? (
         <div className="relative overflow-hidden bg-[#111114] border border-white/[0.08] rounded-2xl p-5 shadow-lg">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="text-[10px] font-semibold tracking-wider uppercase text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
-                Próximo Treino
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-semibold tracking-wider uppercase text-lime-400 bg-lime-400/10 border border-lime-400/20 px-2 py-0.5 rounded-md">
+                  Próximo Treino
+                </span>
+                {activeRoutine?.currentWeek && (
+                  <span className="text-[10px] font-semibold text-slate-400">
+                    Semana {activeRoutine.currentWeek} de 4
+                  </span>
+                )}
+              </div>
               <h2 className="text-xl font-bold text-slate-100 mt-2 tracking-tight">
                 {nextWorkout.day.name}
               </h2>
@@ -173,7 +201,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
             <button
               type="button"
               onClick={() => startRoutineWorkout(nextWorkout.routine, nextWorkout.day)}
-              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 transition-all shrink-0"
+              className="px-5 py-2.5 bg-lime-400 hover:bg-lime-300 active:scale-95 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 transition-all shrink-0 shadow-md"
             >
               <Play size={14} className="fill-current" /> Iniciar
             </button>
@@ -192,7 +220,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
             <button
               type="button"
               onClick={() => onNavigateToTab('routines')}
-              className="text-amber-400 hover:text-amber-300 font-medium flex items-center gap-1 shrink-0 ml-2"
+              className="text-lime-400 hover:text-lime-300 font-medium flex items-center gap-1 shrink-0 ml-2"
             >
               Ver rotinas <ArrowRight size={13} />
             </button>
@@ -207,14 +235,22 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
           <button
             type="button"
             onClick={() => startQuickWorkout()}
-            className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-1.5"
+            className="px-4 py-2 bg-lime-400 hover:bg-lime-300 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-1.5"
           >
             <Play size={13} className="fill-current" /> Iniciar Agora
           </button>
         </div>
       )}
 
-      {/* 3. Cards de Métricas Semanais */}
+      {/* 3. CALENDÁRIO INTERATIVO DE TREINOS COM DETALHES DE DIAS E MESOCICLO */}
+      <WorkoutCalendar
+        sessions={completedSessions}
+        exercises={exercises}
+        activeRoutine={activeRoutine}
+        onStartRoutine={handleStartRoutineFromId}
+      />
+
+      {/* 4. Cards de Métricas Semanais */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <div className="bg-[#111114] border border-white/[0.07] rounded-xl p-4">
           <span className="text-[11px] font-medium text-slate-400 tracking-tight block">
@@ -250,7 +286,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
 
         <div className="col-span-2 sm:col-span-1 bg-[#111114] border border-white/[0.07] rounded-xl p-4">
           <span className="text-[11px] font-medium text-slate-400 tracking-tight block">
-            Treinos Totais
+            Treinos Totais no Histórico
           </span>
           <div className="flex items-baseline gap-1 mt-1.5">
             <span className="text-2xl font-bold text-slate-100 font-mono">
@@ -261,10 +297,10 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
         </div>
       </div>
 
-      {/* 4. Mapa Muscular Semanal */}
+      {/* 5. Mapa Muscular Semanal */}
       <WeeklyMuscleMap sessions={sessions} exercises={exercises} />
 
-      {/* 5. PRs Recentes Conquistados */}
+      {/* 6. PRs Recentes Conquistados */}
       {prs.length > 0 && (
         <div className="bg-[#111114] border border-white/[0.08] rounded-2xl p-5 space-y-3">
           <div className="flex items-center justify-between">
@@ -275,7 +311,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
             <button
               type="button"
               onClick={() => onNavigateToTab('analytics')}
-              className="text-xs font-medium text-amber-400 hover:text-amber-300"
+              className="text-xs font-medium text-lime-400 hover:text-lime-300"
             >
               Ver todos
             </button>
@@ -307,11 +343,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({ onNavigateToTab })
         </div>
       )}
 
-      {/* Modal de Calibração Inteligente */}
+      {/* Modais Globais */}
       <SmartPlanOnboardingModal
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
         onPlanApplied={() => setIsOnboardingOpen(false)}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
       />
     </div>
   );
