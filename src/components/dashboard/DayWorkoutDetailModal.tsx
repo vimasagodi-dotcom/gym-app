@@ -226,3 +226,4 @@ export const DayWorkoutDetailModal: React.FC<DayWorkoutDetailModalProps> = ({
     </div>
   );
 };
+
