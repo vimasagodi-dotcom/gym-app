@@ -6,7 +6,7 @@ import {
   Dumbbell,
   History,
   TrendingUp,
-  Settings,
+  User,
 } from 'lucide-react';
 
 export type NavTab = 'dashboard' | 'routines' | 'workout' | 'exercises' | 'history' | 'analytics' | 'settings';
@@ -25,11 +25,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
     { id: 'exercises', label: 'Exercícios', icon: Dumbbell },
     { id: 'history', label: 'Histórico', icon: History },
     { id: 'analytics', label: 'Progresso', icon: TrendingUp },
-    { id: 'settings', label: 'Perfil', icon: Settings },
+    { id: 'settings', label: 'Perfil', icon: User },
   ] as const;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-t border-white/[0.08] px-1 py-1.5 safe-area-pb">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-t border-white/[0.08] px-1.5 pt-1.5 safe-area-pb">
       <div className="max-w-md mx-auto flex items-center justify-between">
         {navItems.map((item) => {
           const isSelected = currentTab === item.id;
@@ -40,19 +40,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
               key={item.id}
               type="button"
               onClick={() => onSelectTab(item.id)}
-              className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-lg transition-all active:scale-95 min-w-0 ${
+              className={`flex flex-col items-center justify-center flex-1 min-h-[46px] py-1 px-0.5 rounded-xl transition-all active:scale-95 min-w-0 ${
                 isSelected
-                  ? 'text-amber-400 font-semibold'
+                  ? 'text-lime-400 font-bold'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <div className="relative flex items-center justify-center">
-                <Icon size={19} className={isSelected ? 'stroke-[2.2]' : 'stroke-[1.6]'} />
-                {isSelected && (
-                  <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-amber-400" />
-                )}
+                <Icon size={20} className={isSelected ? 'stroke-[2.3]' : 'stroke-[1.7]'} />
               </div>
-              <span className="text-[9px] sm:text-[10px] mt-1 tracking-tight text-center truncate max-w-full block">
+              <span className="text-[10px] mt-1 tracking-tight text-center truncate max-w-full block leading-none">
                 {item.label}
               </span>
             </button>

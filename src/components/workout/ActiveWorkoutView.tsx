@@ -140,51 +140,46 @@ export const ActiveWorkoutView: React.FC = () => {
         </button>
       </div>
 
-      {/* 3. Conteúdo do Exercício Atual */}
+      {/* 3. Conteúdo do Exercício Atual (Otimizado para Telemóvel) */}
       {currentExerciseLog && currentExerciseMeta ? (
-        <div className="flex-1 max-w-2xl w-full mx-auto p-4 space-y-4">
-          {/* Cartão de Detalhe e Diagrama Anatómico */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-4 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
-                <h2 className="text-lg sm:text-xl font-bold text-slate-100">
+        <div className="flex-1 max-w-xl w-full mx-auto px-3 py-3 space-y-3">
+          {/* Cartão Compacto de Exercício & Botão de Demonstração 3D */}
+          <div className="bg-[#111114] border border-white/[0.08] rounded-2xl p-3.5 shadow-lg flex items-center justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-base sm:text-lg font-extrabold text-slate-100 leading-tight">
                   {currentExerciseMeta.namePt}
                 </h2>
                 <button
                   type="button"
-                  onClick={() => setIsVideoModalOpen(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/35 text-amber-400 rounded-lg text-xs font-semibold transition-all active:scale-95 shadow-sm"
-                  title="Ver vídeo demonstrativo e biomecânica"
-                >
-                  <Play size={12} className="fill-current" />
-                  <span>Ver Vídeo</span>
-                </button>
-                <button
-                  type="button"
                   onClick={() => setShowInstructions(!showInstructions)}
-                  className="p-1 text-slate-400 hover:text-amber-400"
+                  className="p-1 text-slate-400 hover:text-lime-400"
                   title="Ver instruções de execução"
                 >
-                  <Info size={17} />
+                  <Info size={16} />
                 </button>
               </div>
-              <p className="text-xs text-slate-400 mt-1">{currentExerciseMeta.name}</p>
 
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-3">
-                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 border border-slate-700/60">
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsVideoModalOpen(true)}
+                  className="flex items-center gap-1 px-2.5 py-1 bg-lime-400/15 hover:bg-lime-400/25 border border-lime-400/35 text-lime-400 rounded-lg text-[11px] font-bold transition-all active:scale-95"
+                >
+                  <Play size={11} className="fill-current" />
+                  <span>Animação 3D</span>
+                </button>
+                <span className="px-2 py-1 rounded-lg bg-[#18181c] text-[10px] font-semibold text-slate-300 border border-white/[0.06]">
                   {EQUIPMENT_LABELS_PT[currentExerciseMeta.equipment] || currentExerciseMeta.equipment}
                 </span>
-                <span className="px-2.5 py-1 rounded-full bg-slate-800 text-[11px] font-semibold text-slate-300 border border-slate-700/60">
-                  {currentExerciseMeta.movementType === 'compound' ? 'Composto' : 'Isolado'}
-                </span>
-                <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-[11px] font-bold text-amber-400 border border-amber-500/20">
+                <span className="px-2 py-1 rounded-lg bg-[#18181c] text-[10px] font-bold text-slate-300 border border-white/[0.06]">
                   Descanso: {currentExerciseLog.restSeconds || 90}s
                 </span>
               </div>
             </div>
 
-            {/* Mini Diagrama Anatómico Interativo com Músculos Primários e Secundários em Destaque */}
-            <div className="shrink-0 bg-slate-950/60 p-2 rounded-2xl border border-slate-800/80 flex items-center justify-center">
+            {/* Mini Diagrama Anatómico Compacto */}
+            <div className="hidden sm:flex shrink-0 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80 items-center justify-center">
               <MuscleDiagram
                 primaryMuscles={currentExerciseMeta.primaryMuscles}
                 secondaryMuscles={currentExerciseMeta.secondaryMuscles}

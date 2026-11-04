@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../../db/db';
 import { useUser } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { deleteWorkoutFromCloud } from '../../services/cloudSync';
+import { EQUIPMENT_LABELS_PT } from '../../types/exercise';
 import { formatDuration, formatWeight } from '../../utils/formulas';
 import {
   Calendar,
@@ -16,6 +19,7 @@ import {
 
 export const HistoryView: React.FC = () => {
   const { unit } = useUser();
+  const { user } = useAuth();
   const [expandedSessionId, setExpandedSessionId] = useState<string | null>(null);
 
   const sessions = useLiveQuery(() =>
@@ -35,13 +39,16 @@ export const HistoryView: React.FC = () => {
     e.stopPropagation();
     if (confirm('Desejas mesmo apagar o registo desta sessão de treino?')) {
       await db.workoutSessions.delete(id);
+      if (user?.uid) {
+        deleteWorkoutFromCloud(user.uid, id).catch(() => {});
+      }
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-4 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight">
+    <div className="max-w-xl mx-auto px-3.5 py-3 pb-28 safe-area-pt space-y-4 animate-fade-in">
+      <div className="pt-1">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-100 tracking-tight">
           Histórico de Treinos
         </h1>
         <p className="text-xs text-slate-400 mt-0.5">
@@ -152,8 +159,8 @@ export const HistoryView: React.FC = () => {
                               <span className="text-xs font-bold text-slate-200">
                                 {exIdx + 1}. {meta?.namePt || meta?.name || 'Exercício'}
                               </span>
-                              <span className="text-[11px] text-slate-500 capitalize">
-                                {meta?.equipment}
+                              <span className="text-[11px] text-slate-500">
+                                {meta?.equipment ? EQUIPMENT_LABELS_PT[meta.equipment] || meta.equipment : ''}
                               </span>
                             </div>
 

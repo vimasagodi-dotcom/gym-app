@@ -59,7 +59,7 @@ export const RoutinesView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-3.5 sm:px-4 py-3 sm:py-4 pb-28 space-y-5 animate-fade-in">
+    <div className="max-w-xl mx-auto px-3.5 py-3 pb-28 safe-area-pt space-y-4 animate-fade-in">
       {/* Cabeçalho */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>

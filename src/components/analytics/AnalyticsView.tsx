@@ -54,9 +54,9 @@ export const AnalyticsView: React.FC = () => {
     .join(' ');
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pb-28 space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight">
+    <div className="max-w-xl mx-auto px-3.5 py-3 pb-28 safe-area-pt space-y-5 animate-fade-in">
+      <div className="pt-1">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-100 tracking-tight">
           Estatísticas & Progresso
         </h1>
         <p className="text-xs text-slate-400 mt-0.5">

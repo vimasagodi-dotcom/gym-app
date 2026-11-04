@@ -1,7 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '../../db/db';
 import { useUser } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
-import { AuthModal } from '../auth/AuthModal';
+import { useWorkout } from '../../context/WorkoutContext';
+import { WorkoutCalendar } from '../dashboard/WorkoutCalendar';
 import type { AvatarSilhouette, FitnessGoal } from '../../types/user';
 import { exportDatabaseToJson, importDatabaseFromJson } from '../../utils/exportImport';
 import {
@@ -14,20 +17,43 @@ import {
   Upload,
   Check,
   Shield,
-  KeyRound,
   Cloud,
   HardDrive,
   LogOut,
+  RefreshCw,
 } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { profile, updateProfile, setUnitSystem, setSilhouette, toggleTheme } = useUser();
   const { user, logout, isFirebaseActive, isSyncing, syncNow } = useAuth();
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [nameInput, setNameInput] = useState(profile.name);
+  const { startRoutineWorkout } = useWorkout();
+
+  const [nameInput, setNameInput] = useState(user?.displayName || profile.name);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Dados para o Calendário de Treinos no Perfil do Utilizador
+  const sessions = useLiveQuery(() => db.workoutSessions.orderBy('startedAt').reverse().toArray()) || [];
+  const routines = useLiveQuery(() => db.routines.toArray()) || [];
+  const exercises = useLiveQuery(() => db.exercises.toArray()) || [];
+
+  const completedSessions = useMemo(
+    () => sessions.filter((s) => s.completedAt !== undefined),
+    [sessions]
+  );
+
+  const activeRoutine = useMemo(() => {
+    if (routines.length === 0) return null;
+    return routines.find((r) => !r.isTemplate) || routines[0];
+  }, [routines]);
+
+  const handleStartRoutineFromId = (routineId: string) => {
+    const routine = routines.find((r) => r.id === routineId);
+    if (routine && routine.days.length > 0) {
+      startRoutineWorkout(routine, routine.days[0]);
+    }
+  };
 
   const handleSaveName = async () => {
     await updateProfile({ name: nameInput });
@@ -41,7 +67,7 @@ export const SettingsView: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `gymapp_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `iron_atlas_copia_${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -65,9 +91,9 @@ export const SettingsView: React.FC = () => {
   };
 
   const silhouettes: { id: AvatarSilhouette; label: string; desc: string }[] = [
-    { id: 'neutral', label: 'Neutro', desc: 'Silhueta atlética equilibrada' },
-    { id: 'male', label: 'Masculino', desc: 'Silhueta com ombros mais largos' },
-    { id: 'female', label: 'Feminino', desc: 'Silhueta com anca e cintura destacadas' },
+    { id: 'neutral', label: 'Neutro', desc: 'Silhueta equilibrada' },
+    { id: 'male', label: 'Masculino', desc: 'Ombros mais largos' },
+    { id: 'female', label: 'Feminino', desc: 'Anca e cintura destacadas' },
   ];
 
   const goals: { id: FitnessGoal; label: string }[] = [
@@ -79,105 +105,98 @@ export const SettingsView: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto p-4 pb-28 space-y-5 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight">
-          Definições & Perfil
+    <div className="max-w-xl mx-auto px-3.5 py-3 pb-28 safe-area-pt space-y-4 animate-fade-in">
+      {/* 1. Cabeçalho do Perfil */}
+      <div className="pt-1">
+        <h1 className="text-xl sm:text-2xl font-black text-slate-100 tracking-tight">
+          O Meu Perfil
         </h1>
         <p className="text-xs text-slate-400 mt-0.5">
-          Personaliza a app para o teu estilo de treino no ginásio
+          Calendário de atividade, conta e preferências de treino
         </p>
       </div>
 
-      {/* 0. Conta & Sincronização */}
-      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-5 shadow-lg space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span className="w-8 h-8 rounded-xl bg-lime-400/15 text-lime-400 flex items-center justify-center">
-              <KeyRound size={16} />
-            </span>
-            <div>
-              <h2 className="text-sm font-bold text-slate-100">Conta & Sincronização</h2>
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                {isFirebaseActive ? (
-                  <>
-                    <Cloud size={11} className="text-emerald-400" />
-                    <span>Nuvem Firebase Conectada</span>
-                  </>
-                ) : (
-                  <>
-                    <HardDrive size={11} className="text-lime-400" />
-                    <span>Armazenamento Local Ativo</span>
-                  </>
-                )}
+      {/* 2. Cartão de Conta & Sincronização do Utilizador */}
+      {user && (
+        <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 shadow-lg space-y-3.5">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-12 h-12 rounded-2xl bg-lime-400/15 border border-lime-400/35 text-lime-400 font-black text-lg flex items-center justify-center shrink-0">
+                {(user.displayName || profile.name || 'A').charAt(0).toUpperCase()}
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-sm font-bold text-slate-100 truncate">
+                  {user.displayName || profile.name}
+                </h2>
+                <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                <div className="flex items-center gap-1.5 text-[10px] font-semibold mt-1">
+                  {isFirebaseActive ? (
+                    <span className="text-emerald-400 flex items-center gap-1">
+                      <Cloud size={11} /> Sincronizado na Nuvem
+                    </span>
+                  ) : (
+                    <span className="text-lime-400 flex items-center gap-1">
+                      <HardDrive size={11} /> Guardado no Telemóvel
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={logout}
+              className="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/25 text-rose-400 rounded-xl text-xs font-bold flex items-center gap-1.5 shrink-0 active:scale-95 transition-all"
+            >
+              <LogOut size={13} />
+              <span>Sair</span>
+            </button>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setIsAuthModalOpen(true)}
-            className="px-3.5 py-1.5 bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold text-xs rounded-xl transition-all"
-          >
-            {user ? 'Gerir Conta' : 'Iniciar Sessão'}
-          </button>
+          {isFirebaseActive && (
+            <button
+              type="button"
+              disabled={isSyncing}
+              onClick={() => syncNow()}
+              className="w-full py-2.5 bg-[#18181c] hover:bg-[#22222a] border border-white/[0.08] text-lime-400 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all active:scale-[0.99] disabled:opacity-50"
+            >
+              <RefreshCw size={13} className={isSyncing ? 'animate-spin' : ''} />
+              <span>{isSyncing ? 'A sincronizar com a nuvem...' : 'Sincronizar Treinos e Calendário Agora'}</span>
+            </button>
+          )}
         </div>
+      )}
 
-        {user ? (
-          <div className="bg-[#18181c] p-3 rounded-2xl flex items-center justify-between gap-2">
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-200 truncate">{user.displayName}</p>
-              <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {isFirebaseActive && (
-                <button
-                  type="button"
-                  onClick={() => syncNow()}
-                  disabled={isSyncing}
-                  className="text-xs text-lime-400 hover:text-lime-300 bg-lime-400/10 border border-lime-400/25 py-1 px-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
-                >
-                  {isSyncing ? 'A sincronizar...' : 'Sincronizar Agora'}
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={logout}
-                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 py-1 px-2 rounded-lg"
-              >
-                <LogOut size={13} /> Terminar Sessão
-              </button>
-            </div>
-          </div>
-        ) : (
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Inicia sessão para sincronizar os teus treinos no calendário e recuperar o acesso caso troques de telemóvel.
-          </p>
-        )}
-      </div>
+      {/* 3. CALENDÁRIO INTERATIVO DE TREINOS E CICLO DE 4 SEMANAS (No Perfil do Utilizador) */}
+      <WorkoutCalendar
+        sessions={completedSessions}
+        exercises={exercises}
+        activeRoutine={activeRoutine}
+        onStartRoutine={handleStartRoutineFromId}
+      />
 
-      {/* 1. Perfil do Atleta */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-4">
-        <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <User size={16} className="text-amber-400" /> Perfil do Utilizador
+      {/* 4. Dados do Atleta & Objetivo */}
+      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-lg space-y-4">
+        <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <User size={15} className="text-lime-400" /> Dados do Atleta
         </h2>
 
         <div>
-          <label className="text-xs font-semibold text-slate-400 block mb-1">
-            Nome do Atleta
+          <label className="text-xs font-semibold text-slate-400 block mb-1.5">
+            Nome de Exibição
           </label>
           <div className="flex gap-2">
             <input
               type="text"
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
-              className="flex-1 bg-slate-950 border border-slate-700 rounded-2xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-400"
+              className="flex-1 min-h-[44px] bg-[#18181c] border border-white/[0.1] rounded-2xl px-3.5 py-2 text-sm text-slate-100 focus:outline-none focus:border-lime-400"
               placeholder="O teu nome"
             />
             <button
               type="button"
               onClick={handleSaveName}
-              className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-2xl transition-all"
+              className="px-4 min-h-[44px] bg-lime-400 hover:bg-lime-300 text-slate-950 font-bold text-xs rounded-2xl transition-all shrink-0"
             >
               {savedSuccess ? 'Guardado!' : 'Guardar'}
             </button>
@@ -196,8 +215,8 @@ export const SettingsView: React.FC = () => {
                 onClick={() => updateProfile({ goal: g.id })}
                 className={`p-3 rounded-2xl text-xs font-bold text-left transition-all border ${
                   profile.goal === g.id
-                    ? 'bg-amber-500/15 border-amber-500 text-amber-400'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:bg-slate-800'
+                    ? 'bg-lime-400/15 border-lime-400 text-lime-400'
+                    : 'bg-[#18181c] border-white/[0.06] text-slate-300 hover:bg-[#222228]'
                 }`}
               >
                 {g.label}
@@ -207,17 +226,14 @@ export const SettingsView: React.FC = () => {
         </div>
       </div>
 
-      {/* 2. Personalização do Diagrama Anatómico (Avatar / Silhueta) */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-3">
-        <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <Settings size={16} className="text-amber-400" />
-          Silhueta do Diagrama Muscular
+      {/* 5. Silhueta do Diagrama Muscular */}
+      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-lg space-y-3">
+        <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <Settings size={15} className="text-lime-400" />
+          Silhueta do Mapa Anatómico
         </h2>
-        <p className="text-xs text-slate-400">
-          Escolhe o avatar visual usado no diagrama anatómico. A base de exercícios e músculos é idêntica para todos.
-        </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        <div className="grid grid-cols-3 gap-2">
           {silhouettes.map((s) => {
             const isSelected = profile.avatarSilhouette === s.id;
             return (
@@ -225,43 +241,42 @@ export const SettingsView: React.FC = () => {
                 key={s.id}
                 type="button"
                 onClick={() => setSilhouette(s.id)}
-                className={`p-4 rounded-2xl text-left transition-all border ${
+                className={`p-3 rounded-2xl text-left transition-all border ${
                   isSelected
-                    ? 'bg-amber-500/15 border-amber-500 text-amber-400 shadow-md shadow-amber-500/10'
-                    : 'bg-slate-950/60 border-slate-800 text-slate-400 hover:bg-slate-800'
+                    ? 'bg-lime-400/15 border-lime-400 text-lime-400'
+                    : 'bg-[#18181c] border-white/[0.06] text-slate-400'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sm text-slate-100">{s.label}</span>
-                  {isSelected && <Check size={16} className="text-amber-400" />}
+                  <span className="font-bold text-xs text-slate-100">{s.label}</span>
+                  {isSelected && <Check size={14} className="text-lime-400" />}
                 </div>
-                <span className="text-[11px] text-slate-500 mt-1 block">{s.desc}</span>
+                <span className="text-[10px] text-slate-500 mt-1 block leading-tight">{s.desc}</span>
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 3. Sistema de Unidades & Sons */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-4">
-        <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <Scale size={16} className="text-amber-400" /> Preferências do Ginásio
+      {/* 6. Preferências do Ginásio (Unidades & Tema) */}
+      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-lg space-y-4">
+        <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <Scale size={15} className="text-lime-400" /> Preferências do Ginásio
         </h2>
 
-        {/* Unidades de Carga */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div>
             <span className="text-xs font-bold text-slate-200 block">Unidade de Peso</span>
             <span className="text-[11px] text-slate-500">Quilogramas (kg) ou Libras (lbs)</span>
           </div>
 
-          <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+          <div className="flex items-center gap-1 bg-[#18181c] p-1 rounded-2xl border border-white/[0.08]">
             <button
               type="button"
               onClick={() => setUnitSystem('kg')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 profile.unitSystem === 'kg'
-                  ? 'bg-amber-500 text-slate-950'
+                  ? 'bg-lime-400 text-slate-950'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -270,9 +285,9 @@ export const SettingsView: React.FC = () => {
             <button
               type="button"
               onClick={() => setUnitSystem('lbs')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 profile.unitSystem === 'lbs'
-                  ? 'bg-amber-500 text-slate-950'
+                  ? 'bg-lime-400 text-slate-950'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -281,62 +296,58 @@ export const SettingsView: React.FC = () => {
           </div>
         </div>
 
-        {/* Tema Escuro / Claro */}
-        <div className="flex items-center justify-between pt-2 border-t border-slate-800/80">
+        <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
           <div>
-            <span className="text-xs font-bold text-slate-200 block">Aparência do Tema</span>
-            <span className="text-[11px] text-slate-500">Escuro (recomendado para ginásio) ou Claro</span>
+            <span className="text-xs font-bold text-slate-200 block">Aparência</span>
+            <span className="text-[11px] text-slate-500">Tema escuro ou claro</span>
           </div>
 
           <button
             type="button"
             onClick={toggleTheme}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-950 border border-slate-800 rounded-2xl text-xs font-bold text-slate-300 hover:bg-slate-800"
+            className="flex items-center gap-2 px-3.5 py-2 bg-[#18181c] border border-white/[0.08] rounded-2xl text-xs font-bold text-slate-200"
           >
             {profile.theme === 'dark' ? (
               <>
-                <Moon size={15} className="text-amber-400" /> Tema Escuro
+                <Moon size={14} className="text-lime-400" /> Escuro
               </>
             ) : (
               <>
-                <Sun size={15} className="text-amber-500" /> Tema Claro
+                <Sun size={14} className="text-amber-500" /> Claro
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* 4. Cópia de Segurança e Persistência Local */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 shadow-lg space-y-3">
-        <h2 className="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <Shield size={16} className="text-amber-400" />
-          Cópia de Segurança & Dados Locais
+      {/* 7. Cópia de Segurança Local */}
+      <div className="bg-[#111114] border border-white/[0.08] rounded-3xl p-4 sm:p-5 shadow-lg space-y-3">
+        <h2 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <Shield size={15} className="text-lime-400" />
+          Cópia de Segurança Manual
         </h2>
-        <p className="text-xs text-slate-400">
-          Os teus dados estão guardados no teu telemóvel ou computador (IndexedDB) e na nuvem Firebase quando inicias sessão. Também podes exportar um ficheiro de cópia de segurança manual:
-        </p>
 
         {importStatus && (
-          <div className="p-3 bg-amber-500/15 border border-amber-500/30 rounded-2xl text-xs font-bold text-amber-400">
+          <div className="p-3 bg-lime-400/15 border border-lime-400/30 rounded-2xl text-xs font-bold text-lime-300">
             {importStatus}
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+        <div className="grid grid-cols-2 gap-2.5">
           <button
             type="button"
             onClick={handleExport}
-            className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all"
+            className="min-h-[44px] p-2.5 bg-[#18181c] hover:bg-[#222228] border border-white/[0.08] rounded-2xl flex items-center justify-center gap-1.5 text-xs font-bold text-slate-200 transition-all"
           >
-            <Download size={16} className="text-amber-400" /> Exportar Cópia (JSON)
+            <Download size={15} className="text-lime-400" /> Exportar JSON
           </button>
 
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-3 bg-slate-950/80 hover:bg-slate-800 border border-slate-800 rounded-2xl flex items-center justify-center gap-2 text-xs font-bold text-slate-200 transition-all"
+            className="min-h-[44px] p-2.5 bg-[#18181c] hover:bg-[#222228] border border-white/[0.08] rounded-2xl flex items-center justify-center gap-1.5 text-xs font-bold text-slate-200 transition-all"
           >
-            <Upload size={16} className="text-sky-400" /> Restaurar Cópia
+            <Upload size={15} className="text-sky-400" /> Restaurar JSON
           </button>
           <input
             type="file"
@@ -347,11 +358,6 @@ export const SettingsView: React.FC = () => {
           />
         </div>
       </div>
-
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-      />
     </div>
   );
 };
